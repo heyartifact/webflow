@@ -8,6 +8,8 @@ The template for the path to load these scripts is:
 https://cdn.jsdelivr.net/gh/user/repo@version/file
 ```
 
+By excluding the tag, jsDelivr will fetch the latest semantic version of the script.
+
 Ending the file name with `.min.js` will prompt jsDelivr to automatically create and serve a minified version of the
 script.
 
@@ -28,8 +30,6 @@ pages, you can edit the scripts in the Webflow page to target a specific branch 
 ```
 
 **Remember to changes these back before publishing the Webflow page to production!**
-
-By excluding the tag, jsDelivr will fetch the latest semantic version of the script.
 
 Note that the files are cached and will not automatically fetch new versions with future commits (unless it sees that
 the version has changed). However, if a branch is cached and is stale for testing, you can also use the commit id to

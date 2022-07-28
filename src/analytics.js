@@ -50,9 +50,7 @@ function getInterviewerPlayerEventProperties(target) {
 
 
 // Take the target of an event and return an object of the relevant properties to be included in the tracking event.
-function getEventProperties(target) {
-    const dataset = target.dataset
-    const eventName = dataset['eventName']
+function getEventProperties(eventName, dataset, target) {
     const eventProperties = {}
 
     // Add custom attributes that start with `data-event-` to the event properties.
@@ -90,5 +88,5 @@ $('[data-event-name]').click(function() {
     const target = $(this).closest('[data-event-name]')[0]
     const dataset = target.dataset
     const eventName = dataset['eventName']
-    sendEvent(eventName, getEventProperties(target))
+    sendEvent(eventName, getEventProperties(eventName, dataset, target))
 })

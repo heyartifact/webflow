@@ -1,4 +1,4 @@
-const PLAYER = document.querySelector('[data-element=audio-player]')
+PLAYER = document.querySelector('[data-element=audio-player]')
 
 // These values should be applied to the `data-animation` attribute of the element that triggers the animation.
 const YOUR_LITTLE_ONE_ANIMATION = 'your-little-one'

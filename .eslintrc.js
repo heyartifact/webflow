@@ -14,7 +14,8 @@ module.exports = {
         analytics: 'readonly',
         sendEvent: 'readonly',
         // Additional globals that need to be set in the Webflow page's script.
-        PAGE_NAME: 'readonly'
+        PAGE_NAME: 'readonly',
+        PLAYER: 'writable'
     },
     parserOptions: {
         ecmaVersion: 2018,

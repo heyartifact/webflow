@@ -1,4 +1,4 @@
-const PLAYER = document.querySelector('[data-element=audio-player]')
+PLAYER = document.querySelector('[data-element=audio-player]')
 PLAYER.querySelector('source').src = '0'
 
 const AUDIO_TOGGLES = document.querySelectorAll('[data-element=player-toggle]')

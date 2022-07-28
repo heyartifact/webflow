@@ -49,10 +49,13 @@ function getInterviewerPlayerEventProperties(target) {
 }
 
 
-function getEventProperties(eventName, dataset, target) {
+// Take the target of an event and return an object of the relevant properties to be included in the tracking event.
+function getEventProperties(target) {
+    const dataset = target.dataset
+    const eventName = dataset['eventName']
     const eventProperties = {}
 
-    // Add custom attributes to event properties.
+    // Add custom attributes that start with `data-event-` to the event properties.
     for (const attr in dataset) {
         if (attr.startsWith('event') && attr !== 'eventName') {
             const propName = attr.charAt(5).toLowerCase() + attr.slice(6)
@@ -60,9 +63,11 @@ function getEventProperties(eventName, dataset, target) {
         }
     }
 
+    // Add additional properties for specific event names.
     if (eventName === 'FAQs Opened' && !('eventType' in dataset)) {
         // Only send event if FAQ is being opened.
         if ($(target).find('.answer-wrapper')[0].style.opacity !== '0') return null
+
         Object.assign(eventProperties, getFAQEventProperties(target))
     } else if (eventName === 'Player Started') {
         if (dataset.eventBlock === 'interviewers') {
@@ -85,5 +90,5 @@ $('[data-event-name]').click(function() {
     const target = $(this).closest('[data-event-name]')[0]
     const dataset = target.dataset
     const eventName = dataset['eventName']
-    sendEvent(eventName, getEventProperties(eventName, dataset, target))
+    sendEvent(eventName, getEventProperties(target))
 })

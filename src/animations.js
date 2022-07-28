@@ -32,12 +32,14 @@ const CURRENT_ANIMATION_INFO = {
     timeScrolledIntoView: null
 }
 
+
 function setRadialProgressBar(animation, animationTime) {
     const audioProgress = animationTime / animation.duration
     const audioProgressBar = $(animation.progressBarSelector)
     const strokeOffset = (1 - audioProgress) * 2 * Math.PI * audioProgressBar.attr('r')
     audioProgressBar.css({ strokeDashoffset: strokeOffset })
 }
+
 
 function yourLittleOneAnimation() {
     if (CURRENT_ANIMATION_INFO.name === YOUR_LITTLE_ONE_ANIMATION) {
@@ -64,6 +66,8 @@ function yourLittleOneAnimation() {
     }
 }
 
+
+// Trigger the animation to start when the play button is scrolled into view.
 function onPlayButtonIntersection(entries) {
     const playButtonEntry = entries[0]
     const animationName = playButtonEntry.target.dataset['animation']
@@ -81,12 +85,16 @@ function onPlayButtonIntersection(entries) {
     }
 }
 
-const observer = new IntersectionObserver(onPlayButtonIntersection, {
-    root: null,
-    threshold: 0.5
-})
-const yourLittleOnePlayButton = document.querySelector('.your-little-one_conversation_button')
-observer.observe(yourLittleOnePlayButton)
-ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector(
-    '[data-element=url]'
-).innerText
+// Set up the animations.
+(() => {
+    const observer = new IntersectionObserver(onPlayButtonIntersection, {
+        root: null,
+        threshold: 0.5
+    })
+    const yourLittleOnePlayButton = document.querySelector('.your-little-one_conversation_button')
+    observer.observe(yourLittleOnePlayButton)
+
+    ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector(
+        '[data-element=url]'
+    ).innerText
+})()

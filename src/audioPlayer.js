@@ -1,3 +1,4 @@
+// Instantiate the PLAYER variable in the Webflow page's head since it is needed across multiple scripts.
 PLAYER = document.querySelector('[data-element=audio-player]')
 PLAYER.querySelector('source').src = '0'
 
@@ -7,7 +8,7 @@ AUDIO_TOGGLES.forEach((podcastTrigger) => {
     podcastTrigger.addEventListener('click', setPlayer.bind(podcastTrigger))
 })
 
-// Helper to call a function declared in another JS file that should be loaded.
+// Helper to safely call a function declared in the analytics script that should be loaded.
 function getAnalyticsEventProperties(eventName, dataset, podcastTrigger) {
     if (typeof getEventProperties !== 'undefined') {
         // eslint-disable-next-line no-undef

@@ -14,7 +14,7 @@ function getAnalyticsEventProperties(eventName, audioToggle) {
         // eslint-disable-next-line no-undef
         return getEventProperties(eventName, audioToggle)
     } else {
-        Sentry.captureMessage('`getEventProperties` function not loaded.')
+        Sentry.captureMessage('`getEventProperties` was called before it was loaded.')
         return {}
     }
 }

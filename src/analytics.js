@@ -12,6 +12,17 @@ for (const delay of [5, 15, 30, 45]) {
 }
 
 
+function sendEvent(name, properties) {
+    // Ensure that analytics has loaded before trying to send an event.
+    if (typeof analytics !== 'undefined') {
+        analytics.track(name, {
+            page: PAGE_NAME,
+            ...properties
+        })
+    }
+}
+
+
 function getBlockProperties(block) {
     const blockVariants = {
         FAQs: 'vertical-expanding',
@@ -50,8 +61,9 @@ function getInterviewerPlayerEventProperties(target) {
 
 
 // Take the target of an event and return an object of the relevant properties to be included in the tracking event.
-function getEventProperties(eventName, dataset, target) {
+function getEventProperties(eventName, target) {
     const eventProperties = {}
+    const dataset = target.dataset
 
     // Add custom attributes that start with `data-event-` to the event properties.
     for (const attr in dataset) {
@@ -86,7 +98,6 @@ function getEventProperties(eventName, dataset, target) {
 // Assign a click event for any element with data-event-name set.
 $('[data-event-name]').click(function() {
     const target = $(this).closest('[data-event-name]')[0]
-    const dataset = target.dataset
-    const eventName = dataset['eventName']
-    sendEvent(eventName, getEventProperties(eventName, dataset, target))
+    const eventName = target.getAttribute('data-event-name')
+    sendEvent(eventName, getEventProperties(eventName, target))
 })

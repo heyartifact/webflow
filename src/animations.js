@@ -45,11 +45,17 @@ function yourLittleOneAnimation() {
     if (CURRENT_ANIMATION_INFO.name === YOUR_LITTLE_ONE_ANIMATION) {
         const animation = ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION]
         const isAudioPlaying = !PLAYER.paused && (PLAYER.querySelector('source').src === animation.expectedAudioSrc)
+
+        // animationTime represents the current progress into the animation.
+        // If the appropriate audio is playing, animationTime is the number of milliseconds from the player's
+        // currentTime.
+        // Otherwise, animationTime is the number of milliseconds since the animation was scrolled into view (and using
+        // the modulo operator to account for looping animations).
         const animationTime = (
             isAudioPlaying ?
                 PLAYER.currentTime * 1000 :
-                (new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView
-        ) % animation.duration
+                ((new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView) % animation.duration
+        )
 
         for (const step of animation.steps) {
             const element = document.getElementById(step.id)

@@ -4,18 +4,27 @@ PLAYER.querySelector('source').src = '0'
 
 const AUDIO_TOGGLES = document.querySelectorAll('[data-element=player-toggle]')
 
-AUDIO_TOGGLES.forEach((podcastTrigger) => {
-    podcastTrigger.addEventListener('click', setPlayer.bind(podcastTrigger))
+AUDIO_TOGGLES.forEach((audioToggle) => {
+    audioToggle.addEventListener('click', setPlayer.bind(audioToggle))
 })
 
 // Helper to safely call a function declared in the analytics script that should be loaded.
-function getAnalyticsEventProperties(eventName, dataset, podcastTrigger) {
+function getAnalyticsEventProperties(eventName, audioToggle) {
     if (typeof getEventProperties !== 'undefined') {
         // eslint-disable-next-line no-undef
-        return getEventProperties(eventName, dataset, podcastTrigger)
+        return getEventProperties(eventName, audioToggle)
     } else {
         console.warn('getEventProperties function not loaded!')
         return {}
+    }
+}
+
+function sendAnalyticsEvent(eventName, eventProperties) {
+    if (typeof sendEvent !== 'undefined') {
+        // eslint-disable-next-line no-undef
+        sendEvent(eventName, eventProperties)
+    } else {
+        console.warn('sendEvent function not loaded!')
     }
 }
 
@@ -38,13 +47,24 @@ function syncAudioPlayerAndAnimation() {
     }
 }
 
+
+/**
+ * Sets loads the audio file based on the button that was clicked to start the audio player.
+ *
+ * Here is a sample audio player component that should be included on the page (note that this should be inside a
+ * Webflow div with a class of `audio-wrapper` applied):
+ *
+ *  <audio class="audio-player" controls data-element="audio-player">
+ *      <source src="" type="audio/mp3">
+ *  </audio>
+ */
 async function setPlayer() {
-    const podcastTrigger = this
-    const playIconPlayer = podcastTrigger.querySelector('[data-element=play]')
-    const pauseIconPlayer = podcastTrigger.querySelector(
+    const audioToggle = this
+    const playIconPlayer = audioToggle.querySelector('[data-element=play]')
+    const pauseIconPlayer = audioToggle.querySelector(
         '[data-element=pause]'
     )
-    const audioUrl = podcastTrigger.querySelector('[data-element=url]')
+    const audioUrl = audioToggle.querySelector('[data-element=url]')
         .innerText
     const playerSrc = PLAYER.querySelector('source').src
 
@@ -74,8 +94,7 @@ async function setPlayer() {
                 PLAYER.play()
 
                 const eventName = 'Player Started'
-                const dataset = podcastTrigger.dataset
-                sendEvent(eventName, getAnalyticsEventProperties(eventName, dataset, podcastTrigger))
+                sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, audioToggle))
             },
             { once: true }
         )
@@ -83,11 +102,11 @@ async function setPlayer() {
 }
 
 function resetControllers() {
-    AUDIO_TOGGLES.forEach((podcastTrigger) => {
-        const playIconPlayer = podcastTrigger.querySelector(
+    AUDIO_TOGGLES.forEach((audioToggle) => {
+        const playIconPlayer = audioToggle.querySelector(
             '[data-element=play]'
         )
-        const pauseIconPlayer = podcastTrigger.querySelector(
+        const pauseIconPlayer = audioToggle.querySelector(
             '[data-element=pause]'
         )
         playIconPlayer.setAttribute('display', 'block')

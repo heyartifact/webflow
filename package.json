@@ -1,6 +1,5 @@
 {
   "name": "webflow",
-  "version": "1.0.0",
   "description": "Public repository hosting javascript files used by webflow, and served by jsDelivr",
   "main": "",
   "scripts": {

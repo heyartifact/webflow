@@ -10,12 +10,11 @@ module.exports = {
     globals: {
         // jQuery is available to use in Webflow.
         $: 'readonly',
-        // Segment globals are defined in the Webflow page's head.
+        // Segment globals are defined in the Webflow project's custom code.
         analytics: 'readonly',
-        sendEvent: 'readonly',
         // Additional globals that need to be set in the Webflow page's script.
-        PAGE_NAME: 'readonly',
-        PLAYER: 'writable'
+        PAGE_NAME: 'readonly', // A string to include as the page name for Segment events.
+        PLAYER: 'writable' // Initialize this as an empty variable.
     },
     parserOptions: {
         ecmaVersion: 2018,

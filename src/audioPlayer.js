@@ -14,7 +14,7 @@ function getAnalyticsEventProperties(eventName, audioToggle) {
         // eslint-disable-next-line no-undef
         return getEventProperties(eventName, audioToggle)
     } else {
-        console.warn('getEventProperties function not loaded!')
+        Sentry.captureMessage('`getEventProperties` function not loaded.')
         return {}
     }
 }
@@ -24,7 +24,7 @@ function sendAnalyticsEvent(eventName, eventProperties) {
         // eslint-disable-next-line no-undef
         sendEvent(eventName, eventProperties)
     } else {
-        console.warn('sendEvent function not loaded!')
+        Sentry.captureMessage('`sendEvent` was called before it was loaded.')
     }
 }
 
@@ -42,8 +42,6 @@ function syncAudioPlayerAndAnimation() {
                 ) % animation.duration) / 1000
             }
         }
-    } else {
-        console.warn('There is no animation loaded on this page.')
     }
 }
 

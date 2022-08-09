@@ -1,0 +1,21 @@
+{
+  "name": "webflow",
+  "description": "Public repository hosting javascript files used by webflow, and served by jsDelivr",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heyartifact/webflow.git"
+  },
+  "author": "",
+  "license": "",
+  "bugs": {
+    "url": "https://github.com/heyartifact/webflow/issues"
+  },
+  "homepage": "https://github.com/heyartifact/webflow#readme",
+  "devDependencies": {
+    "eslint": "^8.20.0"
+  }
+}

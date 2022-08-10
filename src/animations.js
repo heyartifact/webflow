@@ -54,7 +54,7 @@ function setRadialProgressBar(animation, animationTime) {
 function heroAnimation() {
     const animation = ANIMATIONS[HERO_VIDEO_ANIMATION]
 
-    setRadialProgressBar(animation, HERO_VIDEO.currentTime)
+    setRadialProgressBar(animation, HERO_VIDEO.currentTime * 1000)
 
     window.requestAnimationFrame(heroAnimation)
 }

@@ -126,8 +126,9 @@ function resetControllers() {
 function toggleVideoMute() {
     const videoToggle = this
 
-    // If we add a case where the video and its trigger are not siblings this selector will need to be revised.
-    const video = $(videoToggle).siblings('video')
+    // If we add a case where the trigger's parent element does not also hold the video, this selector will need to be
+    // revised.
+    const video = $(videoToggle).siblings.find('video')
     const isMuted = video.prop('muted')
     video.prop('muted', !isMuted)
 

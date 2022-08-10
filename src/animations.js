@@ -1,9 +1,19 @@
+// Save elements into global variables so they don't need to be queried from the DOM each animation frame.
 PLAYER = document.querySelector('[data-element=audio-player]')
+const HERO_VIDEO = document.querySelector('.hero-george_video')
 
 // These values should be applied to the `data-animation` attribute of the element that triggers the animation.
+const HERO_VIDEO_ANIMATION = 'hero-video'
 const YOUR_LITTLE_ONE_ANIMATION = 'your-little-one'
 
 const ANIMATIONS = {
+    [HERO_VIDEO_ANIMATION]: {
+        duration: 129000,
+        expectedAudioSrc: null,
+        progressBarSelector: '.hero-mute-button_progress circle',
+        startAnimation: heroAnimation,
+        steps: []
+    },
     [YOUR_LITTLE_ONE_ANIMATION]: {
         duration: 44000,
         expectedAudioSrc: '',
@@ -38,6 +48,15 @@ function setRadialProgressBar(animation, animationTime) {
     const audioProgressBar = $(animation.progressBarSelector)
     const strokeOffset = (1 - audioProgress) * 2 * Math.PI * audioProgressBar.attr('r')
     audioProgressBar.css({ strokeDashoffset: strokeOffset })
+}
+
+
+function heroAnimation() {
+    const animation = ANIMATIONS[HERO_VIDEO_ANIMATION]
+
+    setRadialProgressBar(animation, HERO_VIDEO.currentTime)
+
+    window.requestAnimationFrame(heroAnimation)
 }
 
 
@@ -93,14 +112,18 @@ function onPlayButtonIntersection(entries) {
 
 // Set up the animations.
 (() => {
+    heroAnimation()
+
     const observer = new IntersectionObserver(onPlayButtonIntersection, {
         root: null,
         threshold: 0.5
     })
-    const yourLittleOnePlayButton = document.querySelector('.your-little-one_conversation_button')
-    observer.observe(yourLittleOnePlayButton)
 
-    ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector(
-        '[data-element=url]'
-    ).innerText
+    // TODO: Finish the your-little-one block before enabling this animation.
+    // const yourLittleOnePlayButton = document.querySelector('.your-little-one_conversation_button')
+    // observer.observe(yourLittleOnePlayButton)
+
+    // ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector(
+    //     '[data-element=url]'
+    // ).innerText
 })()

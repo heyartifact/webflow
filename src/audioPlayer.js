@@ -128,7 +128,7 @@ function toggleVideoMute() {
 
     // If we add a case where the trigger's parent element does not also hold the video, this selector will need to be
     // revised.
-    const video = $(videoToggle).siblings.find('video')
+    const video = $(videoToggle).siblings().find('video')
     const isMuted = video.prop('muted')
     video.prop('muted', !isMuted)
 

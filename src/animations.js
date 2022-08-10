@@ -1,6 +1,6 @@
 // Save elements into global variables so they don't need to be queried from the DOM each animation frame.
 PLAYER = document.querySelector('[data-element=audio-player]')
-const HERO_VIDEO = document.querySelector('.hero-george_video')
+const HERO_VIDEO = document.querySelector('.hero-george_video video')
 
 // These values should be applied to the `data-animation` attribute of the element that triggers the animation.
 const HERO_VIDEO_ANIMATION = 'hero-video'

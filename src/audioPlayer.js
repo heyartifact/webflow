@@ -8,6 +8,12 @@ AUDIO_TOGGLES.forEach((audioToggle) => {
     audioToggle.addEventListener('click', setPlayer.bind(audioToggle))
 })
 
+const VIDEO_TOGGLES = document.querySelectorAll('[data-element=video-toggle]')
+
+VIDEO_TOGGLES.forEach(videoToggle => {
+    videoToggle.addEventListener('click', toggleVideoMute.bind(videoToggle))
+})
+
 // Helper to safely call a function declared in the analytics script that should be loaded.
 function getAnalyticsEventProperties(eventName, audioToggle) {
     if (typeof getEventProperties !== 'undefined') {
@@ -110,4 +116,21 @@ function resetControllers() {
         playIconPlayer.setAttribute('display', 'block')
         pauseIconPlayer.setAttribute('display', 'none')
     })
+}
+
+
+/**
+ * A helper function to toggle a video's mute state. Bind the trigger to this function so that the video selector can be
+ * safely retrieved and the icon in the button can be changed.
+ */
+function toggleVideoMute() {
+    const videoToggle = this
+
+    // If we add a case where the video and its trigger are not siblings this selector will need to be revised.
+    const video = $(videoToggle).siblings('video')
+    const isMuted = video.prop('muted')
+    video.prop('muted', !isMuted)
+
+    this.querySelector('[data-element=unmute').setAttribute('display', isMuted ? 'none' : 'block')
+    this.querySelector('[data-element=mute').setAttribute('display', isMuted ? 'block' : 'none')
 }

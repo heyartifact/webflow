@@ -151,6 +151,6 @@ function toggleVideoMute() {
 
 function muteAllVideos() {
     $('video').each(function() {
-        this.prop('muted', true)
+        $(this).prop('muted', true)
     })
 }

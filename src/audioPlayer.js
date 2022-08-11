@@ -63,6 +63,9 @@ function syncAudioPlayerAndAnimation() {
  *  </audio>
  */
 async function setPlayer() {
+    // Ensure the audio player and video audio do not play on top of each other.
+    muteAllVideos()
+
     const audioToggle = this
     const playIconPlayer = audioToggle.querySelector('[data-element=play]')
     const pauseIconPlayer = audioToggle.querySelector(
@@ -106,15 +109,16 @@ async function setPlayer() {
 }
 
 function resetControllers() {
-    AUDIO_TOGGLES.forEach((audioToggle) => {
-        const playIconPlayer = audioToggle.querySelector(
-            '[data-element=play]'
-        )
-        const pauseIconPlayer = audioToggle.querySelector(
-            '[data-element=pause]'
-        )
-        playIconPlayer.setAttribute('display', 'block')
-        pauseIconPlayer.setAttribute('display', 'none')
+    [...AUDIO_TOGGLES, ...VIDEO_TOGGLES].forEach((mediaToggle) => {
+        const playIcon = mediaToggle.querySelector('[data-element=play]')
+        const pauseIcon = mediaToggle.querySelector('[data-element=pause]')
+        const unmuteIcon = mediaToggle.querySelector('[data-element=unmute]')
+        const muteIcon = mediaToggle.querySelector('[data-element=mute]')
+
+        if (playIcon) playIcon.setAttribute('display', 'block')
+        if (pauseIcon) playIcon.setAttribute('display', 'none')
+        if (unmuteIcon) playIcon.setAttribute('display', 'block')
+        if (muteIcon) playIcon.setAttribute('display', 'none')
     })
 }
 
@@ -125,6 +129,10 @@ function resetControllers() {
  */
 function toggleVideoMute() {
     const videoToggle = this
+
+    // Ensure the audio player and video audio do not play on top of each other.
+    PLAYER.pause()
+    resetControllers()
 
     // If we add a case where the trigger's parent element does not also hold the video, this selector will need to be
     // revised.
@@ -139,4 +147,10 @@ function toggleVideoMute() {
         const eventName = 'Video Unmuted'
         sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, this))
     }
+}
+
+function muteAllVideos() {
+    $('video').each(function() {
+        this.prop('muted', true)
+    })
 }

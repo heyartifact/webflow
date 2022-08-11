@@ -116,9 +116,9 @@ function resetControllers() {
         const muteIcon = mediaToggle.querySelector('[data-element=mute]')
 
         if (playIcon) playIcon.setAttribute('display', 'block')
-        if (pauseIcon) playIcon.setAttribute('display', 'none')
-        if (unmuteIcon) playIcon.setAttribute('display', 'block')
-        if (muteIcon) playIcon.setAttribute('display', 'none')
+        if (pauseIcon) pauseIcon.setAttribute('display', 'none')
+        if (unmuteIcon) unmuteIcon.setAttribute('display', 'block')
+        if (muteIcon) muteIcon.setAttribute('display', 'none')
     })
 }
 

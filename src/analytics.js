@@ -27,20 +27,26 @@ function getBlockProperties(block) {
     const blockVariants = {
         FAQs: 'vertical-expanding',
         footer: 'basic',
+        hero: 'basic',
         inspirations: 'carousel',
         interviewers: 'carousel',
         'packages-and-pricing': 'basic',
+        pricing: 'basic',
+        subscribe: 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
         topnav: 'basic',
         'whats-included': 'basic',
         'your-child': 'basic'
     }
-    const additionalProperties = {}
+
+    const blockProperties = { 'block-variant': blockVariants[block] }
     if (block === 'topnav') {
-        additionalProperties['topnav-pinned'] = (window.pageYOffset || document.body.scrollTop) > 0
+        // TODO: This will not be adequate for the interactive hero section where the topnav does not get pinned until
+        // after the hero animation is complete.
+        blockProperties['topnav-pinned'] = (window.pageYOffset || document.body.scrollTop) > 0
     }
-    return { 'block-variant': blockVariants[block], ...additionalProperties }
+    return blockProperties
 }
 
 
@@ -61,6 +67,7 @@ function getInterviewerPlayerEventProperties(target) {
 
 
 // Take the target of an event and return an object of the relevant properties to be included in the tracking event.
+// Return `null` if the event should not be sent.
 function getEventProperties(eventName, target) {
     const eventProperties = {}
     const dataset = target.dataset
@@ -95,9 +102,13 @@ function getEventProperties(eventName, target) {
 }
 
 
-// Assign a click event for any element with data-event-name set.
+// Assign a click event for any element with `data-event-name` set.
+// The element should also have the `data-event-label` and `data-event-block` custom attributes set.
 $('[data-event-name]').click(function() {
     const target = $(this).closest('[data-event-name]')[0]
     const eventName = target.getAttribute('data-event-name')
-    sendEvent(eventName, getEventProperties(eventName, target))
+    const eventProperties = getEventProperties(eventName, target)
+
+    // `getEventProperties` will return `null` if the event should not be sent.
+    if (eventProperties) sendEvent(eventName, eventProperties)
 })

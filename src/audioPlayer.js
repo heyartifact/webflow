@@ -15,10 +15,10 @@ VIDEO_TOGGLES.forEach(videoToggle => {
 })
 
 // Helper to safely call a function declared in the analytics script that should be loaded.
-function getAnalyticsEventProperties(eventName, audioToggle) {
+function getAnalyticsEventProperties(eventName, toggleTarget) {
     if (typeof getEventProperties !== 'undefined') {
         // eslint-disable-next-line no-undef
-        return getEventProperties(eventName, audioToggle)
+        return getEventProperties(eventName, toggleTarget)
     } else {
         Sentry.captureMessage('`getEventProperties` was called before it was loaded.')
         return {}
@@ -134,4 +134,9 @@ function toggleVideoMute() {
 
     this.querySelector('[data-element=unmute').setAttribute('display', isMuted ? 'none' : 'block')
     this.querySelector('[data-element=mute').setAttribute('display', isMuted ? 'block' : 'none')
+
+    if (isMuted) {
+        const eventName = 'Video Unmuted'
+        sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, this))
+    }
 }

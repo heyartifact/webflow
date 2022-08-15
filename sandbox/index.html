@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            .individual-word {
+                margin-right: 0.25em;
+            }
+            .speaker-container {
+                width: 100px;
+                height: 70px;
+                background-color: lightgray;
+                overflow: hidden;
+                margin-bottom: 16px;
+                position: relative
+            }
+            .speaker-quote {
+                display: flex;
+                flex-wrap: wrap;
+                position: absolute;
+            }
+            .staged-word {
+                opacity: 0.3;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="speaker-1-container" class="speaker-container">
+            <div id="speaker-1-quote" class="speaker-quote"></div>
+        </div>
+        <div id="speaker-2-container" class="speaker-container">
+            <div id="speaker-2-quote" class="speaker-quote"></div>
+        </div>
+        <video id="audio-player" controls muted autoplay loop><source src="./moment_KB4w2J8x.mp3"></video>
+
+        <script src="./karaoke.js"></script>
+    </body>
+</html>

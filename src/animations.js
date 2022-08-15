@@ -119,11 +119,10 @@ function onPlayButtonIntersection(entries) {
         threshold: 0.5
     })
 
-    // TODO: Finish the your-little-one block before enabling this animation.
-    // const yourLittleOnePlayButton = document.querySelector('.your-little-one_conversation_button')
-    // observer.observe(yourLittleOnePlayButton)
+    const yourLittleOnePlayButton = document.querySelector('.your-little-one_conversation_button')
+    observer.observe(yourLittleOnePlayButton)
 
-    // ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector(
-    //     '[data-element=url]'
-    // ).innerText
+    ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector(
+        '[data-element=url]'
+    ).innerText
 })()

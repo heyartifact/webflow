@@ -145,7 +145,7 @@ function toggleVideoMute() {
 
     if (isMuted) {
         const eventName = 'Video Unmuted'
-        video.currentTime = 0
+        video.prop('currentTime', 0)
         sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, this))
     }
 }

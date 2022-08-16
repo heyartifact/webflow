@@ -94,6 +94,8 @@ function getEventProperties(eventName, target) {
         }
     }
 
+    // `data-event-block` is included as a custom attribute for most events, which will create a `block` key in the
+    // `eventProperties` object.
     if ('block' in eventProperties) {
         Object.assign(eventProperties, getBlockProperties(eventProperties.block))
     }

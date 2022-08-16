@@ -1,6 +1,5 @@
 // Instantiate the PLAYER variable in the Webflow page's head since it is needed across multiple scripts.
 PLAYER = document.querySelector('[data-element=audio-player]')
-PLAYER.querySelector('source').src = '0'
 
 const AUDIO_TOGGLES = document.querySelectorAll('[data-element=player-toggle]')
 
@@ -10,9 +9,18 @@ AUDIO_TOGGLES.forEach((audioToggle) => {
 
 const VIDEO_TOGGLES = document.querySelectorAll('[data-element=video-toggle]')
 
+
+function updateVideoToggleIcon(videoToggle, isMuted) {
+    videoToggle.querySelector('[data-element=unmute').setAttribute('display', isMuted ? 'block' : 'none')
+    videoToggle.querySelector('[data-element=mute').setAttribute('display', isMuted ? 'none' : 'block')
+}
+
 VIDEO_TOGGLES.forEach(videoToggle => {
     videoToggle.addEventListener('click', toggleVideoMute.bind(videoToggle))
+    const video = findAssociatedVideo(videoToggle)
+    video.on('volumechange', (event) => updateVideoToggleIcon(videoToggle, event.target.muted))
 })
+
 
 // Helper to safely call a function declared in the analytics script that should be loaded.
 function getAnalyticsEventProperties(eventName, toggleTarget) {
@@ -25,6 +33,7 @@ function getAnalyticsEventProperties(eventName, toggleTarget) {
     }
 }
 
+
 function sendAnalyticsEvent(eventName, eventProperties) {
     if (typeof sendEvent !== 'undefined') {
         // eslint-disable-next-line no-undef
@@ -33,6 +42,7 @@ function sendAnalyticsEvent(eventName, eventProperties) {
         Sentry.captureMessage('`sendEvent` was called before it was loaded.')
     }
 }
+
 
 // Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
 function syncAudioPlayerAndAnimation() {
@@ -109,7 +119,9 @@ async function setPlayer() {
 }
 
 function resetControllers() {
-    [...AUDIO_TOGGLES, ...VIDEO_TOGGLES].forEach((mediaToggle) => {
+    AUDIO_TOGGLES.forEach((mediaToggle) => {
+        // Note: The audio toggle buttons use either play/pause icons or mute/unmute icons, depending on whether or not
+        // they autoplay muted or if the user has to take an action to start the audio.
         const playIcon = mediaToggle.querySelector('[data-element=play]')
         const pauseIcon = mediaToggle.querySelector('[data-element=pause]')
         const unmuteIcon = mediaToggle.querySelector('[data-element=unmute]')
@@ -123,9 +135,24 @@ function resetControllers() {
 }
 
 
+function findAssociatedVideo(videoToggle) {
+    const videos = $(videoToggle).parent().find('video')
+    if (videos.length === 0) {
+        Sentry.captureMessage('A video toggle button does not have an associated video.')
+        return null
+    } else if (videos.length > 1) {
+        Sentry.captureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', {
+            level: 'info'
+        })
+    }
+    return videos.first()
+}
+
+
 /**
  * A helper function to toggle a video's mute state. Bind the trigger to this function so that the video selector can be
  * safely retrieved and the icon in the button can be changed.
+ * Videos on the page will autoplay on loop, so the buttons control the mute state of the video element.
  */
 function toggleVideoMute() {
     const videoToggle = this
@@ -136,22 +163,31 @@ function toggleVideoMute() {
 
     // If we add a case where the trigger's parent element does not also hold the video, this selector will need to be
     // revised.
-    const video = $(videoToggle).siblings().find('video')
+    const video = findAssociatedVideo(videoToggle)
+    // A Sentry alert has already been sent if the video is not found.
+    if (!video) return null
+
     const isMuted = video.prop('muted')
     video.prop('muted', !isMuted)
 
-    this.querySelector('[data-element=unmute').setAttribute('display', isMuted ? 'none' : 'block')
-    this.querySelector('[data-element=mute').setAttribute('display', isMuted ? 'block' : 'none')
-
     if (isMuted) {
+        // Make sure there is not audio from multiple videos playing simultaneously.
+        muteAllVideos(video)
+
         const eventName = 'Video Unmuted'
+        // Restart the video from the beginning.
         video.prop('currentTime', 0)
         sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, this))
     }
 }
 
-function muteAllVideos() {
-    $('video').each(function() {
+
+/**
+ * Mute all videos on the page. A video can be passed as an argument to exclude it from this action, so when one video
+ * is unmuted it can mute all other videos on the page.
+ */
+function muteAllVideos(excludedVideo=null) {
+    $('video').not(excludedVideo).each(function() {
         $(this).prop('muted', true)
     })
 }

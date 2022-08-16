@@ -136,6 +136,8 @@ function resetControllers() {
 
 
 function findAssociatedVideo(videoToggle) {
+    // If we add a case where the trigger's parent element does not also hold the video, this selector will need to be
+    // revised.
     const videos = $(videoToggle).parent().find('video')
     if (videos.length === 0) {
         Sentry.captureMessage('A video toggle button does not have an associated video.')
@@ -161,8 +163,6 @@ function toggleVideoMute() {
     PLAYER.pause()
     resetControllers()
 
-    // If we add a case where the trigger's parent element does not also hold the video, this selector will need to be
-    // revised.
     const video = findAssociatedVideo(videoToggle)
     // A Sentry alert has already been sent if the video is not found.
     if (!video) return null

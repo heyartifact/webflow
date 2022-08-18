@@ -104,6 +104,26 @@ const CURRENT_ANIMATION_INFO = {
     timeScrolledIntoView: null
 }
 
+let FAILED_KARAOKE_UPDATE_ATTEMPTS = 0
+
+
+/**
+ * Even with the correct import order and with the `defer` attribute applied, `updateKaraoke` may not be ready to be
+ * invoked by the time the animation starts.
+ */
+function attemptUpdateKaraoke(karaokeAnimationInfo, animationTime) {
+    if (typeof updateKaraoke !== 'undefined') {
+        updateKaraoke(karaokeAnimationInfo, animationTime)
+    } else {
+        FAILED_KARAOKE_UPDATE_ATTEMPTS++
+        // Assuming the animation runs at 60 FPS, this will give about a second of cushion before sending a Sentry
+        // error.
+        if (FAILED_KARAOKE_UPDATE_ATTEMPTS === 60) {
+            Sentry.captureMessage('`updateKaraoke` was not loaded properly.')
+        }
+    }
+}
+
 
 function setRadialProgressBar(animation, animationTime) {
     const audioProgress = animationTime / animation.duration
@@ -148,7 +168,7 @@ function yourLittleOneAnimation() {
         }
 
         setRadialProgressBar(animation, animationTime)
-        updateKaraoke(animation.karaoke, animationTime)
+        attemptUpdateKaraoke(animation.karaoke, animationTime)
 
         window.requestAnimationFrame(yourLittleOneAnimation)
     }

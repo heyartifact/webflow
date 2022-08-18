@@ -25,11 +25,11 @@ const ANIMATIONS = {
             speakerElements: {
                 1: {
                     container: document.querySelector('#your-little-one-karaoke-container .speaker-1-container'),
-                    quote: document.querySelector('#your-little-one-karaoke-container .speaker-1-quote')
+                    quote: document.querySelector('#your-little-one-karaoke-container .speaker-1-container .speaker-quote')
                 },
                 2: {
                     container: document.querySelector('#your-little-one-karaoke-container .speaker-2-container'),
-                    quote: document.querySelector('#your-little-one-karaoke-container .speaker-2-quote')
+                    quote: document.querySelector('#your-little-one-karaoke-container .speaker-2-container .speaker-quote')
                 }
             },
             textVariant: 'subtitle-1',

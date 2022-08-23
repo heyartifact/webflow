@@ -10,7 +10,7 @@ AUDIO_TOGGLES.forEach((audioToggle) => {
 const VIDEO_TOGGLES = document.querySelectorAll('[data-element=video-toggle]')
 
 
-function updateVideoToggleIcon(videoToggle, isMuted) {
+function updateVideoToggleIcon(videoToggle: Element, isMuted: boolean) {
     videoToggle.querySelector('[data-element=unmute').setAttribute('display', isMuted ? 'block' : 'none')
     videoToggle.querySelector('[data-element=mute').setAttribute('display', isMuted ? 'none' : 'block')
 }
@@ -23,7 +23,7 @@ VIDEO_TOGGLES.forEach(videoToggle => {
 
 
 // Helper to safely call a function declared in the analytics script that should be loaded.
-function getAnalyticsEventProperties(eventName, toggleTarget) {
+function getAnalyticsEventProperties(eventName: string, toggleTarget: HTMLElement) {
     if (typeof getEventProperties !== 'undefined') {
         // eslint-disable-next-line no-undef
         return getEventProperties(eventName, toggleTarget)
@@ -34,7 +34,7 @@ function getAnalyticsEventProperties(eventName, toggleTarget) {
 }
 
 
-function sendAnalyticsEvent(eventName, eventProperties) {
+function sendAnalyticsEvent(eventName: string, eventProperties: EventProperties) {
     if (typeof sendEvent !== 'undefined') {
         // eslint-disable-next-line no-undef
         sendEvent(eventName, eventProperties)
@@ -72,14 +72,13 @@ function syncAudioPlayerAndAnimation() {
  *      <source src="" type="audio/mp3">
  *  </audio>
  */
-async function setPlayer() {
+async function setPlayer(this: HTMLElement) {
     // Ensure the audio player and video audio do not play on top of each other.
     muteAllVideos()
 
-    const audioToggle = this
-    const playUnmuteIconPlayer = audioToggle.querySelector('[data-element=play], [data-element=unmute]')
-    const pauseMuteIconPlayer = audioToggle.querySelector('[data-element=pause], [data-element=mute]')
-    const audioUrl = audioToggle.querySelector('[data-element=url]').innerText
+    const playUnmuteIconPlayer = this.querySelector('[data-element=play], [data-element=unmute]')
+    const pauseMuteIconPlayer = this.querySelector('[data-element=pause], [data-element=mute]')
+    const audioUrl = this.querySelector<HTMLElement>('[data-element=url]').innerText
     const playerSrc = PLAYER.querySelector('source').src
 
     if (playerSrc.length !== 1 && playerSrc === audioUrl) {
@@ -108,7 +107,7 @@ async function setPlayer() {
                 PLAYER.play()
 
                 const eventName = 'Player Started'
-                sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, audioToggle))
+                sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, this))
             },
             { once: true }
         )
@@ -132,7 +131,7 @@ function resetControllers() {
 }
 
 
-function findAssociatedVideo(videoToggle) {
+function findAssociatedVideo(videoToggle: Element) {
     // If we add a case where the trigger's parent element does not also hold the video, this selector will need to be
     // revised.
     const videos = $(videoToggle).parent().find('video')
@@ -140,9 +139,7 @@ function findAssociatedVideo(videoToggle) {
         Sentry.captureMessage('A video toggle button does not have an associated video.')
         return null
     } else if (videos.length > 1) {
-        Sentry.captureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', {
-            level: 'info'
-        })
+        Sentry.captureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info')
     }
     return videos.first()
 }
@@ -153,14 +150,12 @@ function findAssociatedVideo(videoToggle) {
  * safely retrieved and the icon in the button can be changed.
  * Videos on the page will autoplay on loop, so the buttons control the mute state of the video element.
  */
-function toggleVideoMute() {
-    const videoToggle = this
-
+function toggleVideoMute(this: HTMLElement): void {
     // Ensure the audio player and video audio do not play on top of each other.
     PLAYER.pause()
     resetControllers()
 
-    const video = findAssociatedVideo(videoToggle)
+    const video = findAssociatedVideo(this)
     // A Sentry alert has already been sent if the video is not found.
     if (!video) return null
 
@@ -183,7 +178,7 @@ function toggleVideoMute() {
  * Mute all videos on the page. A video can be passed as an argument to exclude it from this action, so when one video
  * is unmuted it can mute all other videos on the page.
  */
-function muteAllVideos(excludedVideo=null) {
+function muteAllVideos(excludedVideo: JQuery<HTMLElement> = null) {
     $('video').not(excludedVideo).each(function() {
         $(this).prop('muted', true)
     })

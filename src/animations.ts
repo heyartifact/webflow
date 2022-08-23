@@ -3,13 +3,13 @@
 
 // Save elements into global variables so they don't need to be queried from the DOM each animation frame.
 PLAYER = document.querySelector('[data-element=audio-player]')
-const HERO_VIDEO = document.querySelector('.hero-george_video video')
+const HERO_VIDEO = document.querySelector<HTMLVideoElement>('.hero-george_video video')
 
 // These values should be applied to the `data-animation` attribute of the element that triggers the animation.
 const HERO_VIDEO_ANIMATION = 'hero-video'
 const YOUR_LITTLE_ONE_ANIMATION = 'your-little-one'
 
-const ANIMATIONS = {
+const ANIMATIONS: Record<string, AnimationInfo> = {
     [HERO_VIDEO_ANIMATION]: {
         duration: 129000,
         expectedAudioSrc: null,
@@ -98,7 +98,7 @@ const ANIMATIONS = {
     }
 }
 
-const CURRENT_ANIMATION_INFO = {
+const CURRENT_ANIMATION_INFO: CurrentAnimationInfo = {
     karaokeState: null,
     name: null,
     timeScrolledIntoView: null
@@ -111,7 +111,7 @@ let FAILED_KARAOKE_UPDATE_ATTEMPTS = 0
  * Even with the correct import order and with the `defer` attribute applied, `updateKaraoke` may not be ready to be
  * invoked by the time the animation starts.
  */
-function attemptUpdateKaraoke(karaokeAnimationInfo, animationTime) {
+function attemptUpdateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animationTime: number) {
     if (typeof updateKaraoke !== 'undefined') {
         updateKaraoke(karaokeAnimationInfo, animationTime)
     } else {
@@ -125,10 +125,10 @@ function attemptUpdateKaraoke(karaokeAnimationInfo, animationTime) {
 }
 
 
-function setRadialProgressBar(animation, animationTime) {
+function setRadialProgressBar(animation: AnimationInfo, animationTime: number) {
     const audioProgress = animationTime / animation.duration
-    const audioProgressBar = $(animation.progressBarSelector)
-    const strokeOffset = (1 - audioProgress) * 2 * Math.PI * audioProgressBar.attr('r')
+    const audioProgressBar = $<SVGCircleElement>(animation.progressBarSelector)
+    const strokeOffset = (1 - audioProgress) * 2 * Math.PI * parseInt(audioProgressBar.attr('r'))
     audioProgressBar.css({ strokeDashoffset: strokeOffset })
 }
 
@@ -176,9 +176,9 @@ function yourLittleOneAnimation() {
 
 
 // Trigger the animation to start when the play button is scrolled into view.
-function onPlayButtonIntersection(entries) {
+function onPlayButtonIntersection(entries: IntersectionObserverEntry[]) {
     const playButtonEntry = entries[0]
-    const animationName = playButtonEntry.target.dataset['animation']
+    const animationName = (playButtonEntry.target as HTMLElement).dataset['animation']
     if (playButtonEntry.isIntersecting && animationName in ANIMATIONS) {
         // Start a new animation when it scrolls into view.
         CURRENT_ANIMATION_INFO.karaokeState = null
@@ -209,7 +209,7 @@ function onPlayButtonIntersection(entries) {
     const yourLittleOnePlayButton = document.querySelector('.your-little-one_conversation_button')
     observer.observe(yourLittleOnePlayButton)
 
-    ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector(
+    ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector<HTMLElement>(
         '[data-element=url]'
     ).innerText
 })()

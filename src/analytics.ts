@@ -12,7 +12,7 @@ for (const delay of [5, 15, 30, 45]) {
 }
 
 
-function sendEvent(name, properties) {
+function sendEvent(name: string, properties: Record<string, unknown>) {
     // Ensure that analytics has loaded before trying to send an event.
     if (typeof analytics !== 'undefined') {
         analytics.track(name, {
@@ -23,8 +23,8 @@ function sendEvent(name, properties) {
 }
 
 
-function getBlockProperties(block) {
-    const blockVariants = {
+function getBlockProperties(block: string) {
+    const blockVariants: Record<string, BlockVariant> = {
         FAQs: 'vertical-expanding',
         footer: 'basic',
         hero: 'basic',
@@ -41,7 +41,7 @@ function getBlockProperties(block) {
         'your-child': 'basic'
     }
 
-    const blockProperties = { 'block-variant': blockVariants[block] }
+    const blockProperties: BlockEventProperties = { 'block-variant': blockVariants[block] }
     if (block === 'topnav') {
         // TODO: This will not be adequate for the interactive hero section where the topnav does not get pinned until
         // after the hero animation is complete.
@@ -51,13 +51,13 @@ function getBlockProperties(block) {
 }
 
 
-function getFAQEventProperties(target) {
+function getFAQEventProperties(target: HTMLElement) {
     const questionText = $(target).children().first().children().first().text()
     return { block: 'FAQs', name: questionText, type: 'question' }
 }
 
 
-function getInterviewerPlayerEventProperties(target) {
+function getInterviewerPlayerEventProperties(target: HTMLElement) {
     const interviewerCard = $(target).closest('.interviewers-block')
     const interviewerName = $($(interviewerCard).find('.heading-6')[0]).text()
     return {
@@ -69,8 +69,8 @@ function getInterviewerPlayerEventProperties(target) {
 
 // Take the target of an event and return an object of the relevant properties to be included in the tracking event.
 // Return `null` if the event should not be sent.
-function getEventProperties(eventName, target) {
-    const eventProperties = {}
+function getEventProperties(eventName: string, target: HTMLElement) {
+    const eventProperties: EventProperties = {}
     const dataset = target.dataset
 
     // Add custom attributes that start with `data-event-` to the event properties.
@@ -107,7 +107,7 @@ function getEventProperties(eventName, target) {
 
 // Assign a click event for any element with `data-event-name` set.
 // The element should also have the `data-event-label` and `data-event-block` custom attributes set.
-$('[data-event-name]').click(function() {
+$('[data-event-name]').on('click', function() {
     const target = $(this).closest('[data-event-name]')[0]
     const eventName = target.getAttribute('data-event-name')
     const eventProperties = getEventProperties(eventName, target)

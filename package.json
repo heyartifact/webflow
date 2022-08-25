@@ -3,8 +3,7 @@
   "description": "Public repository hosting javascript files used by webflow, and served by jsDelivr",
   "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --build"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

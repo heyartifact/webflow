@@ -18,7 +18,7 @@ script.
 
 Example:
 ```html
-<script src="https://cdn.jsdelivr.net/gh/heyartifact/webflow@1.0.0/src/analytics.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/heyartifact/webflow@1.0.0/dist/analytics.min.js"></script>
 ```
 
 Refer to the [jsDelivr features](https://www.jsdelivr.com/features#gh) for more information.
@@ -58,3 +58,19 @@ To release a new version of these files:
 For global variables defined synchronously in the document before these scripts are imported, it is safe to assume they
 exist and can be called. Add these variables to the ESlint globals for the project to prevent errors about undefined
 variables.
+
+## TypeScript
+
+To automatically compile the TypeScript files with each commit, create the file `.git/hooks/pre-commit` and add the
+the following commands to the file:
+
+```bash
+#!/bin/sh
+
+echo "Automatically compiling TypeScript..."
+npx tsc
+git add dist/
+```
+
+Note: This compiles scripts from **all** the `.ts` files, not just the ones that were included with the commit. If other
+`.ts` files were updated but not included, stash them before committing.

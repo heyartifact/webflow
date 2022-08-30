@@ -23,6 +23,16 @@ Example:
 
 Refer to the [jsDelivr features](https://www.jsdelivr.com/features#gh) for more information.
 
+### Import Order
+
+The import order of these scripts matters since some scripts depend on functions or globals defined in other scripts.
+The recommended import order is as follows:
+
+- `analytics`
+- `karaoke`
+- `animations`
+- `player`
+
 ## Testing
 
 To stage and test changes to these scripts, you can override the version number in the page's custom code. It is

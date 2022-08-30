@@ -28,6 +28,7 @@ function getBlockProperties(block) {
         FAQs: 'vertical-expanding',
         footer: 'basic',
         hero: 'basic',
+        'how-it-works': 'basic',
         inspirations: 'carousel',
         interviewers: 'carousel',
         'packages-and-pricing': 'basic',

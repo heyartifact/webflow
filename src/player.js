@@ -77,23 +77,20 @@ async function setPlayer() {
     muteAllVideos()
 
     const audioToggle = this
-    const playIconPlayer = audioToggle.querySelector('[data-element=play]')
-    const pauseIconPlayer = audioToggle.querySelector(
-        '[data-element=pause]'
-    )
-    const audioUrl = audioToggle.querySelector('[data-element=url]')
-        .innerText
+    const playUnmuteIconPlayer = audioToggle.querySelector('[data-element=play], [data-element=unmute]')
+    const pauseMuteIconPlayer = audioToggle.querySelector('[data-element=pause], [data-element=mute]')
+    const audioUrl = audioToggle.querySelector('[data-element=url]').innerText
     const playerSrc = PLAYER.querySelector('source').src
 
     if (playerSrc.length !== 1 && playerSrc === audioUrl) {
         if (!PLAYER.paused) {
-            playIconPlayer.setAttribute('display', 'block')
-            pauseIconPlayer.setAttribute('display', 'none')
+            playUnmuteIconPlayer.setAttribute('display', 'block')
+            pauseMuteIconPlayer.setAttribute('display', 'none')
 
             PLAYER.pause()
         } else {
-            playIconPlayer.setAttribute('display', 'none')
-            pauseIconPlayer.setAttribute('display', 'block')
+            playUnmuteIconPlayer.setAttribute('display', 'none')
+            pauseMuteIconPlayer.setAttribute('display', 'block')
             syncAudioPlayerAndAnimation()
             PLAYER.play()
         }
@@ -103,10 +100,10 @@ async function setPlayer() {
         PLAYER.addEventListener(
             'canplay',
             async (_event) => {
-                playIconPlayer.setAttribute('display', 'none')
+                playUnmuteIconPlayer.setAttribute('display', 'none')
                 await resetControllers()
-                pauseIconPlayer.setAttribute('display', 'block')
-                playIconPlayer.setAttribute('display', 'none')
+                pauseMuteIconPlayer.setAttribute('display', 'block')
+                playUnmuteIconPlayer.setAttribute('display', 'none')
                 syncAudioPlayerAndAnimation()
                 PLAYER.play()
 

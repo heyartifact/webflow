@@ -119,7 +119,7 @@ function attemptUpdateKaraoke(karaokeAnimationInfo, animationTime) {
         // Assuming the animation runs at 60 FPS, this will give about ten seconds of cushion before sending a Sentry
         // error.
         if (FAILED_KARAOKE_UPDATE_ATTEMPTS === 600) {
-            Sentry.captureMessage('`updateKaraoke` was not loaded properly.', 'info')
+            Sentry.captureMessage('`updateKaraoke` was not loaded properly.', 'warning')
         }
     }
 }

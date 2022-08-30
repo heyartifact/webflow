@@ -3,7 +3,7 @@
 /**
  * Append a word wrapped in a span to the provided parent node.
  */
-function appendWord(parent, word, textVariant) {
+function appendWord(parent: HTMLElement, word: UtteranceWord, textVariant: string) {
     const wordSpan = document.createElement('span')
     wordSpan.textContent = word.text
     wordSpan.className = `individual-word staged-word ${textVariant} no-margin text-height-1-1`
@@ -15,7 +15,7 @@ function appendWord(parent, word, textVariant) {
 /**
  * Find the quote that is currently being spoken from the utterances.
  */
-function getCurrentQuote(utterances, time) {
+function getCurrentQuote(utterances: Utterances, time: number) {
     for (const quote of utterances) {
         if (time >= quote.start && time < quote.end) {
             return quote
@@ -27,8 +27,9 @@ function getCurrentQuote(utterances, time) {
 /**
  * Remove all the text from the speaker quote elements so that a new quote can begin being animated.
  */
-function clearQuotes(speakerElements) {
-    for (const speaker in speakerElements) {
+function clearQuotes(speakerElements: Record<string, SpeakerElements>) {
+    let speaker: keyof typeof speakerElements
+    for (speaker in speakerElements) {
         speakerElements[speaker].quote.textContent = ''
     }
 }
@@ -38,7 +39,7 @@ function clearQuotes(speakerElements) {
  * Move the spoken word into the visible portion of the container. If the word is already fully visible, no change will
  * be made.
  */
-function moveWordIntoView(container, quote, wordSpan) {
+function moveWordIntoView(container: HTMLElement, quote: HTMLElement, wordSpan: HTMLSpanElement) {
     const containerBoundingRect = container.getBoundingClientRect()
     const wordSpanBoundingRect = wordSpan.getBoundingClientRect()
     const bottomPadding = parseInt($(quote).css('padding-bottom'))
@@ -59,8 +60,8 @@ function moveWordIntoView(container, quote, wordSpan) {
  * Invoke this function from the `animations.js` script. `CURRENT_ANIMATION_INFO` is set as a global in that script and
  * will be available to reference by the time this function is invoked.
  */
-// eslint-disable-next-line no-unused-vars
-function updateKaraoke(karaokeAnimationInfo, animationTime) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function updateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animationTime: number) {
     if (!CURRENT_ANIMATION_INFO.karaokeState) {
         CURRENT_ANIMATION_INFO.karaokeState = {
             currentQuoteStart: null,

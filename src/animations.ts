@@ -2,7 +2,7 @@
 /* globals updateKaraoke */
 
 // Save elements into global variables so they don't need to be queried from the DOM each animation frame.
-PLAYER = document.querySelector('[data-element=audio-player]')
+player = document.querySelector('[data-element=audio-player]')
 
 const SAMPLE_QUESTION_ANNA_ANIMATION: AnimationName = 'sample-question-anna'
 const SAMPLE_QUESTION_GEORGE_ANIMATION: AnimationName = 'sample-question-george'
@@ -480,11 +480,11 @@ function setRadialProgressBar(animation: AnimationInfo, animationTime: number) {
 
 function sampleQuestionAnimation(animationName: AnimationName, karaokeState: KaraokeState = null) {
     const animation = ANIMATIONS[animationName]
-    const isSameAudio = (PLAYER.querySelector('source').src === animation.expectedAudioSrc)
-    const isSameAudioPlaying = isSameAudio && !PLAYER.paused
+    const isSameAudio = (player.querySelector('source').src === animation.expectedAudioSrc)
+    const isSameAudioPlaying = isSameAudio && !player.paused
 
     if (isSameAudioPlaying) {
-        const animationTime = PLAYER.currentTime * 1000
+        const animationTime = player.currentTime * 1000
         setRadialProgressBar(animation, animationTime)
         karaokeState = attemptUpdateKaraoke(animation.karaoke, animationTime, karaokeState)
         window.requestAnimationFrame(() => sampleQuestionAnimation(animationName, karaokeState))
@@ -545,8 +545,8 @@ function getSampleQuestionComponents() {
         audioSourceToAnimationNameMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName
     })
 
-    $(PLAYER).on('play', () => {
-        const playerSource = $(PLAYER).find('source').attr('src')
+    $(player).on('play', () => {
+        const playerSource = $(player).find('source').attr('src')
         for (const sampleQuestionAudioSrc in audioSourceToAnimationNameMap) {
             if (playerSource === sampleQuestionAudioSrc) {
                 sampleQuestionAnimation(audioSourceToAnimationNameMap[sampleQuestionAudioSrc])

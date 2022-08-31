@@ -1,6 +1,6 @@
 // Instantiate the PLAYER variable in the Webflow page's head since it is needed across multiple scripts.
-PLAYER = document.querySelector('[data-element=audio-player]')
-PLAYER.addEventListener('pause', resetControllers)
+player = document.querySelector('[data-element=audio-player]')
+player.addEventListener('pause', resetControllers)
 
 const AUDIO_TOGGLES = document.querySelectorAll('[data-element=player-toggle]')
 
@@ -52,8 +52,8 @@ function syncAudioPlayerAndAnimation() {
         if (CURRENT_ANIMATION_INFO.name in ANIMATIONS) {
             // eslint-disable-next-line no-undef
             const animation = ANIMATIONS[CURRENT_ANIMATION_INFO.name]
-            if (PLAYER.querySelector('source').src === animation.expectedAudioSrc) {
-                PLAYER.currentTime = ((
+            if (player.querySelector('source').src === animation.expectedAudioSrc) {
+                player.currentTime = ((
                     // eslint-disable-next-line no-undef
                     (new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView
                 ) % animation.duration) / 1000
@@ -80,24 +80,24 @@ async function setPlayer(this: HTMLElement) {
     const playUnmuteIconPlayer = this.querySelector('[data-element=play], [data-element=unmute]')
     const pauseMuteIconPlayer = this.querySelector('[data-element=pause], [data-element=mute]')
     const audioUrl = this.querySelector<HTMLElement>('[data-element=url]').innerText
-    const playerSrc = PLAYER.querySelector('source').src
+    const playerSrc = player.querySelector('source').src
 
     if (playerSrc.length !== 1 && playerSrc === audioUrl) {
-        if (!PLAYER.paused) {
+        if (!player.paused) {
             playUnmuteIconPlayer.setAttribute('display', 'block')
             pauseMuteIconPlayer.setAttribute('display', 'none')
 
-            PLAYER.pause()
+            player.pause()
         } else {
             playUnmuteIconPlayer.setAttribute('display', 'none')
             pauseMuteIconPlayer.setAttribute('display', 'block')
             syncAudioPlayerAndAnimation()
-            PLAYER.play()
+            player.play()
         }
     } else {
-        PLAYER.querySelector('source').src = audioUrl
-        PLAYER.load()
-        PLAYER.addEventListener(
+        player.querySelector('source').src = audioUrl
+        player.load()
+        player.addEventListener(
             'canplay',
             async (_event) => {
                 playUnmuteIconPlayer.setAttribute('display', 'none')
@@ -105,7 +105,7 @@ async function setPlayer(this: HTMLElement) {
                 pauseMuteIconPlayer.setAttribute('display', 'block')
                 playUnmuteIconPlayer.setAttribute('display', 'none')
                 syncAudioPlayerAndAnimation()
-                PLAYER.play()
+                player.play()
 
                 const eventName = 'Player Started'
                 sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, this))
@@ -153,7 +153,7 @@ function findAssociatedVideo(videoToggle: Element) {
  */
 function toggleVideoMute(this: HTMLElement): void {
     // Ensure the audio player and video audio do not play on top of each other.
-    PLAYER.pause()
+    player.pause()
     resetControllers()
 
     const video = findAssociatedVideo(this)

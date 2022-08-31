@@ -1,6 +1,6 @@
 
 declare const PAGE_NAME: string
-declare let PLAYER: HTMLAudioElement
+declare let player: HTMLAudioElement
 declare const Sentry: import('@sentry/types').Client
 
 type AnimationName = (

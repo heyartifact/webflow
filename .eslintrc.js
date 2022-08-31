@@ -17,7 +17,7 @@ module.exports = {
         Sentry: 'readonly',
         // Additional globals that need to be set in the Webflow page's script.
         PAGE_NAME: 'readonly', // A string to include as the page name for Segment events.
-        PLAYER: 'writable' // Initialize this as an empty variable.
+        player: 'writable' // Initialize this as an empty variable.
     },
     parser: '@typescript-eslint/parser',
     parserOptions: {

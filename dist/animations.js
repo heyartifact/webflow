@@ -426,7 +426,7 @@ var ANIMATIONS = (_a = {},
                         { 'text': 'have', 'start': 7544, 'end': 7662 },
                         { 'text': 'your', 'start': 7676, 'end': 7854 },
                         { 'text': 'days', 'start': 7892, 'end': 8202 },
-                        { 'text': 'look', 'start': 8276, 'end': 8550 },
+                        { 'text': 'looked', 'start': 8276, 'end': 8550 },
                         { 'text': 'like', 'start': 8600, 'end': 8814 },
                         { 'text': 'with', 'start': 8852, 'end': 9018 },
                         { 'text': 'him?', 'start': 9044, 'end': 9120 }

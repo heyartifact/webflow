@@ -3,9 +3,7 @@
 var _a;
 // Save elements into global variables so they don't need to be queried from the DOM each animation frame.
 PLAYER = document.querySelector('[data-element=audio-player]');
-var HERO_VIDEO = document.querySelector('.hero-george_video video');
 // These values should be applied to the `data-animation` attribute of the element that triggers the animation.
-var HERO_VIDEO_ANIMATION = 'hero-video';
 var YOUR_LITTLE_ONE_ANIMATION = 'your-little-one';
 var SAMPLE_QUESTION_ANNA_ANIMATION = 'sample-question-anna';
 var SAMPLE_QUESTION_GEORGE_ANIMATION = 'sample-question-george';
@@ -24,15 +22,6 @@ var SAMPLE_QUESTION_ANIMATIONS = [
  *      The keys in the `speakerElements` object should match the speaker ids in the utterances.
  */
 var ANIMATIONS = (_a = {},
-    _a[HERO_VIDEO_ANIMATION] = {
-        duration: 129000,
-        expectedAudioSrc: null,
-        karaoke: null,
-        progressBar: null,
-        progressBarSelector: '.hero-mute-button_progress circle',
-        startAnimation: heroAnimation,
-        steps: []
-    },
     /**
      * Sample question animations.
      * Manually set the utterance start time to 0 to ensure that the quote populates on page load, even before the audio
@@ -570,11 +559,6 @@ function setRadialProgressBar(animation, animationTime) {
     var strokeOffset = (1 - audioProgress) * 2 * Math.PI * parseInt(audioProgressBar.attr('r'));
     audioProgressBar.css({ strokeDashoffset: strokeOffset });
 }
-function heroAnimation() {
-    var animation = ANIMATIONS[HERO_VIDEO_ANIMATION];
-    setRadialProgressBar(animation, HERO_VIDEO.currentTime * 1000);
-    window.requestAnimationFrame(heroAnimation);
-}
 function yourLittleOneAnimation() {
     if (CURRENT_ANIMATION_INFO.name === YOUR_LITTLE_ONE_ANIMATION) {
         var animation = ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION];
@@ -672,7 +656,6 @@ function getSampleQuestionComponents() {
 }
 // Set up the animations.
 (function () {
-    heroAnimation();
     var observer = new IntersectionObserver(onPlayButtonIntersection, {
         root: null,
         threshold: 0.5

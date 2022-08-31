@@ -4,8 +4,8 @@ declare let PLAYER: HTMLAudioElement
 declare const Sentry: import('@sentry/types').Client
 
 type AnimationName = (
-    'hero-video' | 'sample-question-anna' | 'sample-question-george' | 'sample-question-julie' |
-    'sample-question-mike' | 'sample-question-pria' | 'sample-question-ruthie' | 'your-little-one'
+    'sample-question-anna' | 'sample-question-george' | 'sample-question-julie' | 'sample-question-mike' |
+    'sample-question-pria' | 'sample-question-ruthie' | 'your-little-one'
 )
 
 type AnimationInfo = {

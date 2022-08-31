@@ -3,10 +3,8 @@
 
 // Save elements into global variables so they don't need to be queried from the DOM each animation frame.
 PLAYER = document.querySelector('[data-element=audio-player]')
-const HERO_VIDEO = document.querySelector<HTMLVideoElement>('.hero-george_video video')
 
 // These values should be applied to the `data-animation` attribute of the element that triggers the animation.
-const HERO_VIDEO_ANIMATION: AnimationName = 'hero-video'
 const YOUR_LITTLE_ONE_ANIMATION: AnimationName = 'your-little-one'
 const SAMPLE_QUESTION_ANNA_ANIMATION: AnimationName = 'sample-question-anna'
 const SAMPLE_QUESTION_GEORGE_ANIMATION: AnimationName = 'sample-question-george'
@@ -26,15 +24,6 @@ const SAMPLE_QUESTION_ANIMATIONS = [
  *      The keys in the `speakerElements` object should match the speaker ids in the utterances.
  */
 const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
-    [HERO_VIDEO_ANIMATION]: {
-        duration: 129000,
-        expectedAudioSrc: null,
-        karaoke: null,
-        progressBar: null,
-        progressBarSelector: '.hero-mute-button_progress circle',
-        startAnimation: heroAnimation,
-        steps: []
-    },
     /**
      * Sample question animations.
      * Manually set the utterance start time to 0 to ensure that the quote populates on page load, even before the audio
@@ -579,15 +568,6 @@ function setRadialProgressBar(animation: AnimationInfo, animationTime: number) {
 }
 
 
-function heroAnimation() {
-    const animation = ANIMATIONS[HERO_VIDEO_ANIMATION]
-
-    setRadialProgressBar(animation, HERO_VIDEO.currentTime * 1000)
-
-    window.requestAnimationFrame(heroAnimation)
-}
-
-
 function yourLittleOneAnimation() {
     if (CURRENT_ANIMATION_INFO.name === YOUR_LITTLE_ONE_ANIMATION) {
         const animation = ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION]
@@ -701,8 +681,6 @@ function getSampleQuestionComponents() {
 
 // Set up the animations.
 (() => {
-    heroAnimation()
-
     const observer = new IntersectionObserver(onPlayButtonIntersection, {
         root: null,
         threshold: 0.5

@@ -479,11 +479,7 @@ function sampleQuestionAnimation(animationName, karaokeState) {
         karaokeState = attemptUpdateKaraoke(animation.karaoke, animationTime, karaokeState);
         window.requestAnimationFrame(function () { return sampleQuestionAnimation(animationName, karaokeState); });
     }
-    else if (isSameAudio) {
-        // The player is paused, but this audio file is still loaded so keep the animation queued.
-        window.requestAnimationFrame(function () { return sampleQuestionAnimation(animationName, karaokeState); });
-    }
-    else {
+    else if (!isSameAudio) {
         // Another audio file has started playing, so this animation can be reset.
         animation.cleanupAnimation();
     }

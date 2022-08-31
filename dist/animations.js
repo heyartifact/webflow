@@ -471,14 +471,20 @@ function setRadialProgressBar(animation, animationTime) {
 function sampleQuestionAnimation(animationName, karaokeState) {
     if (karaokeState === void 0) { karaokeState = null; }
     var animation = ANIMATIONS[animationName];
-    var isAudioPlaying = !PLAYER.paused && (PLAYER.querySelector('source').src === animation.expectedAudioSrc);
-    if (isAudioPlaying) {
-        var animationTime = isAudioPlaying ? PLAYER.currentTime * 1000 : 0;
+    var isSameAudio = (PLAYER.querySelector('source').src === animation.expectedAudioSrc);
+    var isSameAudioPlaying = isSameAudio && !PLAYER.paused;
+    if (isSameAudioPlaying) {
+        var animationTime = PLAYER.currentTime * 1000;
         setRadialProgressBar(animation, animationTime);
         karaokeState = attemptUpdateKaraoke(animation.karaoke, animationTime, karaokeState);
         window.requestAnimationFrame(function () { return sampleQuestionAnimation(animationName, karaokeState); });
     }
+    else if (isSameAudio) {
+        // The player is paused, but this audio file is still loaded so keep the animation queued.
+        window.requestAnimationFrame(function () { return sampleQuestionAnimation(animationName, karaokeState); });
+    }
     else {
+        // Another audio file has started playing, so this animation can be reset.
         animation.cleanupAnimation();
     }
 }

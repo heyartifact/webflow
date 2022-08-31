@@ -31,7 +31,6 @@ type BlockEventProperties = {
 type BlockVariant = 'basic' | 'carousel' | 'vertical-expanding'
 
 type CurrentAnimationInfo = {
-    karaokeState: KaraokeState
     name: AnimationName
     timeScrolledIntoView: number
 }

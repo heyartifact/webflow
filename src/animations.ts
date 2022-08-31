@@ -443,7 +443,6 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CURRENT_ANIMATION_INFO: CurrentAnimationInfo = {
-    karaokeState: null,
     name: null,
     timeScrolledIntoView: null
 }
@@ -455,9 +454,9 @@ let FAILED_KARAOKE_UPDATE_ATTEMPTS = 0
  * Even with the correct import order and with the `defer` attribute applied, `updateKaraoke` may not be ready to be
  * invoked by the time the animation starts.
  */
-function attemptUpdateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animationTime: number) {
+function attemptUpdateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animationTime: number, karaokeState: KaraokeState | null) {
     if (typeof updateKaraoke !== 'undefined') {
-        updateKaraoke(karaokeAnimationInfo, animationTime)
+        return updateKaraoke(karaokeAnimationInfo, animationTime, karaokeState)
     } else {
         FAILED_KARAOKE_UPDATE_ATTEMPTS++
         // Assuming the animation runs at 60 FPS, this will give about ten seconds of cushion before sending a Sentry
@@ -465,6 +464,7 @@ function attemptUpdateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animat
         if (FAILED_KARAOKE_UPDATE_ATTEMPTS === 600) {
             Sentry.captureMessage('`updateKaraoke` was not loaded properly.', 'warning')
         }
+        return null
     }
 }
 
@@ -477,14 +477,14 @@ function setRadialProgressBar(animation: AnimationInfo, animationTime: number) {
 }
 
 
-function sampleQuestionAnimation(animationName: AnimationName) {
+function sampleQuestionAnimation(animationName: AnimationName, karaokeState: KaraokeState = null) {
     const animation = ANIMATIONS[animationName]
     const isAudioPlaying = !PLAYER.paused && (PLAYER.querySelector('source').src === animation.expectedAudioSrc)
     if (isAudioPlaying) {
         const animationTime = isAudioPlaying ? PLAYER.currentTime * 1000 : 0
         setRadialProgressBar(animation, animationTime)
-        attemptUpdateKaraoke(animation.karaoke, animationTime)
-        window.requestAnimationFrame(() => sampleQuestionAnimation(animationName))
+        karaokeState = attemptUpdateKaraoke(animation.karaoke, animationTime, karaokeState)
+        window.requestAnimationFrame(() => sampleQuestionAnimation(animationName, karaokeState))
     } else {
         animation.cleanupAnimation()
     }
@@ -495,8 +495,7 @@ function sampleQuestionAnimation(animationName: AnimationName) {
 function sampleQuestionAnimationCleanup(animationName: AnimationName) {
     const animation = ANIMATIONS[animationName]
     setRadialProgressBar(animation, 0)
-    attemptUpdateKaraoke(animation.karaoke, 0)
-    // TODO: Prevent this from overwriting CURRENT_ANIMATION_INFO.
+    attemptUpdateKaraoke(animation.karaoke, 0, null)
 }
 
 
@@ -540,10 +539,10 @@ function getSampleQuestionComponents() {
     SAMPLE_QUESTION_ANIMATIONS.forEach((animationName) => {
         audioSourceToAnimationMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName
     })
+
     $(PLAYER).on('play', () => {
         const playerSource = $(PLAYER).find('source').attr('src')
         if (playerSource in audioSourceToAnimationMap) {
-            CURRENT_ANIMATION_INFO.karaokeState = null
             sampleQuestionAnimation(audioSourceToAnimationMap[playerSource])
         }
     })

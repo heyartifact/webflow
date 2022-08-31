@@ -1,4 +1,3 @@
-/* globals CURRENT_ANIMATION_INFO */
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -62,9 +61,9 @@ function moveWordIntoView(container, quote, wordSpan) {
  * will be available to reference by the time this function is invoked.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function updateKaraoke(karaokeAnimationInfo, animationTime) {
-    if (!CURRENT_ANIMATION_INFO.karaokeState) {
-        CURRENT_ANIMATION_INFO.karaokeState = {
+function updateKaraoke(karaokeAnimationInfo, animationTime, karaokeState) {
+    if (!karaokeState) {
+        karaokeState = {
             currentQuoteStart: null,
             stagedWords: []
         };
@@ -75,23 +74,24 @@ function updateKaraoke(karaokeAnimationInfo, animationTime) {
     if (currentQuote) {
         var _a = karaokeAnimationInfo.speakerElements[currentQuote.speaker], container = _a.container, quote_1 = _a.quote;
         // Check if a new quote is starting. Clean up the previous quotes and set up the new quote.
-        if (currentQuote.start !== CURRENT_ANIMATION_INFO.karaokeState.currentQuoteStart) {
+        if (currentQuote.start !== karaokeState.currentQuoteStart) {
             clearQuotes(karaokeAnimationInfo.speakerElements);
-            CURRENT_ANIMATION_INFO.karaokeState.currentQuoteStart = currentQuote.start;
-            CURRENT_ANIMATION_INFO.karaokeState.stagedWords = [];
+            karaokeState.currentQuoteStart = currentQuote.start;
+            karaokeState.stagedWords = [];
             currentQuote.words.forEach(function (word) {
                 var wordSpan = appendWord(quote_1, word, karaokeAnimationInfo.textVariant);
-                CURRENT_ANIMATION_INFO.karaokeState.stagedWords.push(__assign({ element: wordSpan }, word));
+                karaokeState.stagedWords.push(__assign({ element: wordSpan }, word));
             });
         }
         // Unstage all words that have been or are currently being spoken.
-        while (CURRENT_ANIMATION_INFO.karaokeState.stagedWords.length > 0 &&
-            currentTime >= CURRENT_ANIMATION_INFO.karaokeState.stagedWords[0].start) {
-            var stagedWordElement = CURRENT_ANIMATION_INFO.karaokeState.stagedWords[0].element;
+        while (karaokeState.stagedWords.length > 0 &&
+            currentTime >= karaokeState.stagedWords[0].start) {
+            var stagedWordElement = karaokeState.stagedWords[0].element;
             stagedWordElement.classList.remove('staged-word');
             // Remove the spoken word from the `stagedWords` array.
-            CURRENT_ANIMATION_INFO.karaokeState.stagedWords.shift();
+            karaokeState.stagedWords.shift();
             moveWordIntoView(container, quote_1, stagedWordElement);
         }
     }
+    return karaokeState;
 }

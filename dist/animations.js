@@ -440,7 +440,6 @@ var ANIMATIONS = (_a = {},
     _a);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 var CURRENT_ANIMATION_INFO = {
-    karaokeState: null,
     name: null,
     timeScrolledIntoView: null
 };
@@ -449,9 +448,9 @@ var FAILED_KARAOKE_UPDATE_ATTEMPTS = 0;
  * Even with the correct import order and with the `defer` attribute applied, `updateKaraoke` may not be ready to be
  * invoked by the time the animation starts.
  */
-function attemptUpdateKaraoke(karaokeAnimationInfo, animationTime) {
+function attemptUpdateKaraoke(karaokeAnimationInfo, animationTime, karaokeState) {
     if (typeof updateKaraoke !== 'undefined') {
-        updateKaraoke(karaokeAnimationInfo, animationTime);
+        return updateKaraoke(karaokeAnimationInfo, animationTime, karaokeState);
     }
     else {
         FAILED_KARAOKE_UPDATE_ATTEMPTS++;
@@ -460,6 +459,7 @@ function attemptUpdateKaraoke(karaokeAnimationInfo, animationTime) {
         if (FAILED_KARAOKE_UPDATE_ATTEMPTS === 600) {
             Sentry.captureMessage('`updateKaraoke` was not loaded properly.', 'warning');
         }
+        return null;
     }
 }
 function setRadialProgressBar(animation, animationTime) {
@@ -468,14 +468,15 @@ function setRadialProgressBar(animation, animationTime) {
     var strokeOffset = (1 - audioProgress) * 2 * Math.PI * parseInt(audioProgressBar.attr('r'));
     audioProgressBar.css({ strokeDashoffset: strokeOffset });
 }
-function sampleQuestionAnimation(animationName) {
+function sampleQuestionAnimation(animationName, karaokeState) {
+    if (karaokeState === void 0) { karaokeState = null; }
     var animation = ANIMATIONS[animationName];
     var isAudioPlaying = !PLAYER.paused && (PLAYER.querySelector('source').src === animation.expectedAudioSrc);
     if (isAudioPlaying) {
         var animationTime = isAudioPlaying ? PLAYER.currentTime * 1000 : 0;
         setRadialProgressBar(animation, animationTime);
-        attemptUpdateKaraoke(animation.karaoke, animationTime);
-        window.requestAnimationFrame(function () { return sampleQuestionAnimation(animationName); });
+        karaokeState = attemptUpdateKaraoke(animation.karaoke, animationTime, karaokeState);
+        window.requestAnimationFrame(function () { return sampleQuestionAnimation(animationName, karaokeState); });
     }
     else {
         animation.cleanupAnimation();
@@ -485,8 +486,7 @@ function sampleQuestionAnimation(animationName) {
 function sampleQuestionAnimationCleanup(animationName) {
     var animation = ANIMATIONS[animationName];
     setRadialProgressBar(animation, 0);
-    attemptUpdateKaraoke(animation.karaoke, 0);
-    // TODO: Prevent this from overwriting CURRENT_ANIMATION_INFO.
+    attemptUpdateKaraoke(animation.karaoke, 0, null);
 }
 var FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS = 0;
 // Since the sample questions are created programmatically from the CMS, they may not be in the DOM by the time this
@@ -524,7 +524,6 @@ function getSampleQuestionComponents() {
     $(PLAYER).on('play', function () {
         var playerSource = $(PLAYER).find('source').attr('src');
         if (playerSource in audioSourceToAnimationMap) {
-            CURRENT_ANIMATION_INFO.karaokeState = null;
             sampleQuestionAnimation(audioSourceToAnimationMap[playerSource]);
         }
     });

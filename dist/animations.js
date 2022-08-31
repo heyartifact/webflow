@@ -527,10 +527,10 @@ function getSampleQuestionComponents() {
         var playerSource = $(PLAYER).find('source').attr('src');
         for (var sampleQuestionAudioSrc in audioSourceToAnimationNameMap) {
             if (playerSource === sampleQuestionAudioSrc) {
-                sampleQuestionAnimation(audioSourceToAnimationNameMap[playerSource]);
+                sampleQuestionAnimation(audioSourceToAnimationNameMap[sampleQuestionAudioSrc]);
             }
             else {
-                sampleQuestionAnimationCleanup(audioSourceToAnimationNameMap[playerSource]);
+                sampleQuestionAnimationCleanup(audioSourceToAnimationNameMap[sampleQuestionAudioSrc]);
             }
         }
     });

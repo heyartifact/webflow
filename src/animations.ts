@@ -508,11 +508,11 @@ let FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS = 0
 // Since the sample questions are created programmatically from the CMS, they may not be in the DOM by the time this
 // script runs (even with `defer`). Attempt to fetch the components for 10 seconds before sending a Sentry alert.
 function getSampleQuestionComponents() {
-    const sampleQuestionsSlider = $('.sample-questions-slider')
+    const sampleQuestionsContainer = $('.section-sample-questions .container-basic')
     for (const animationName of SAMPLE_QUESTION_ANIMATIONS) {
         // The components for these animations are programmatically created from the CMS collection, so they cannot be
         // reliably found with a class or id. Use the audio URL to find the slide associated with this animation.
-        const slide = sampleQuestionsSlider.find(
+        const slide = sampleQuestionsContainer.find(
             `div[data-element='url']:contains('${ANIMATIONS[animationName].expectedAudioSrc}')`
         ).closest('.sample-questions-slide')
 

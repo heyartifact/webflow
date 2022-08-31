@@ -5,7 +5,7 @@ declare const Sentry: import('@sentry/types').Client
 
 type AnimationName = (
     'sample-question-anna' | 'sample-question-george' | 'sample-question-julie' | 'sample-question-mike' |
-    'sample-question-pria' | 'sample-question-ruthie' | 'your-little-one'
+    'sample-question-pria' | 'sample-question-ruthie'
 )
 
 type AnimationInfo = {

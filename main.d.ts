@@ -14,9 +14,7 @@ type AnimationInfo = {
     expectedAudioSrc?: string
     karaoke?: KaraokeAnimationInfo
     progressBar: SVGCircleElement
-    progressBarSelector: string
     startAnimation: () => void
-    steps: AnimationStep[]
 }
 
 type AnimationStep = {

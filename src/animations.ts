@@ -74,9 +74,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_ANNA_ANIMATION),
-        steps: []
+        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_ANNA_ANIMATION)
     },
     [SAMPLE_QUESTION_GEORGE_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_GEORGE_ANIMATION),
@@ -165,9 +163,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_GEORGE_ANIMATION),
-        steps: []
+        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_GEORGE_ANIMATION)
     },
     [SAMPLE_QUESTION_JULIE_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_JULIE_ANIMATION),
@@ -263,9 +259,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_JULIE_ANIMATION),
-        steps: []
+        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_JULIE_ANIMATION)
     },
     [SAMPLE_QUESTION_MIKE_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_MIKE_ANIMATION),
@@ -334,9 +328,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_MIKE_ANIMATION),
-        steps: []
+        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_MIKE_ANIMATION)
     },
     [SAMPLE_QUESTION_PRIA_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_PRIA_ANIMATION),
@@ -396,9 +388,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_PRIA_ANIMATION),
-        steps: []
+        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_PRIA_ANIMATION)
     },
     [SAMPLE_QUESTION_RUTHIE_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_RUTHIE_ANIMATION),
@@ -446,9 +436,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_RUTHIE_ANIMATION),
-        steps: []
+        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_RUTHIE_ANIMATION)
     }
 }
 

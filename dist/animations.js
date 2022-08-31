@@ -72,9 +72,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_ANNA_ANIMATION); },
-        steps: []
+        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_ANNA_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_GEORGE_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_GEORGE_ANIMATION); },
@@ -163,9 +161,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_GEORGE_ANIMATION); },
-        steps: []
+        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_GEORGE_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_JULIE_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_JULIE_ANIMATION); },
@@ -261,9 +257,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_JULIE_ANIMATION); },
-        steps: []
+        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_JULIE_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_MIKE_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_MIKE_ANIMATION); },
@@ -332,9 +326,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_MIKE_ANIMATION); },
-        steps: []
+        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_MIKE_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_PRIA_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_PRIA_ANIMATION); },
@@ -394,9 +386,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_PRIA_ANIMATION); },
-        steps: []
+        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_PRIA_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_RUTHIE_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_RUTHIE_ANIMATION); },
@@ -444,9 +434,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        progressBarSelector: '',
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_RUTHIE_ANIMATION); },
-        steps: []
+        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_RUTHIE_ANIMATION); }
     },
     _a);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

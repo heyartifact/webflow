@@ -514,6 +514,7 @@ function getSampleQuestionComponents() {
         else {
             FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS++;
             setTimeout(getSampleQuestionComponents, 1000);
+            break;
         }
     }
 }

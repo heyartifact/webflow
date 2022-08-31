@@ -272,6 +272,32 @@ function onPlayButtonIntersection(entries) {
         CURRENT_ANIMATION_INFO.timeScrolledIntoView = null;
     }
 }
+var FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS = 0;
+// Since the sample questions are created programmatically from the CMS, they may not be in the DOM by the time this
+// script runs (even with `defer`). Attempt to fetch the components for 10 seconds before sending a Sentry alert.
+function getSampleQuestionComponents() {
+    var sampleQuestionsSlider = $('.sample-questions-slider');
+    for (var _i = 0, _a = [SAMPLE_QUESTION_PRIA_ANIMATION]; _i < _a.length; _i++) {
+        var animationName = _a[_i];
+        // The components for these animations are programmatically created from the CMS collection, so they cannot be
+        // reliably found with a class or id. Use the audio URL to find the slide associated with this animation.
+        var slide = sampleQuestionsSlider.find("div[data-element='url']:contains('".concat(ANIMATIONS[animationName].expectedAudioSrc, "')")).closest('.sample-questions-slide');
+        if (slide.length) {
+            ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress')[0];
+            ANIMATIONS[animationName].karaoke.speakerElements[1].container = slide.find('.sample-question_quote-container')[0];
+            ANIMATIONS[animationName].karaoke.speakerElements[1].quote = slide.find('.sample-question_quote')[0];
+            // Set the initial state of the animation.
+            ANIMATIONS[animationName].cleanupAnimation();
+        }
+        else if (FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS >= 10) {
+            Sentry.captureMessage("Could not find the components associated with animation, ".concat(animationName, ", after 10 seconds."), 'warning');
+        }
+        else {
+            FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS++;
+            setTimeout(getSampleQuestionComponents, 1000);
+        }
+    }
+}
 // Set up the animations.
 (function () {
     heroAnimation();
@@ -282,18 +308,10 @@ function onPlayButtonIntersection(entries) {
     var yourLittleOnePlayButton = document.querySelector('.your-little-one_conversation_button');
     observer.observe(yourLittleOnePlayButton);
     ANIMATIONS[YOUR_LITTLE_ONE_ANIMATION].expectedAudioSrc = yourLittleOnePlayButton.querySelector('[data-element=url]').innerText;
+    getSampleQuestionComponents();
     var audioSourceToAnimationMap = {};
-    var sampleQuestionsSlider = $('.sample-questions-slider');
     [SAMPLE_QUESTION_PRIA_ANIMATION].forEach(function (animationName) {
         audioSourceToAnimationMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName;
-        // The components for these animations are programmatically created from the CMS collection, so they cannot be
-        // reliably found with a class or id. Use the audio URL to find the slide associated with this animation.
-        var slide = sampleQuestionsSlider.find("div[data-element='url']:contains('".concat(ANIMATIONS[animationName].expectedAudioSrc, "')")).closest('.sample-questions-slide');
-        ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress')[0];
-        ANIMATIONS[animationName].karaoke.speakerElements[1].container = slide.find('.sample-question_quote-container')[0];
-        ANIMATIONS[animationName].karaoke.speakerElements[1].quote = slide.find('.sample-question_quote')[0];
-        // Set the initial state of the animation.
-        ANIMATIONS[animationName].cleanupAnimation();
     });
     $(PLAYER).on('play', function () {
         var playerSource = $(PLAYER).find('source').attr('src');

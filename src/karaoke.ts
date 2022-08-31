@@ -6,7 +6,7 @@
 function appendWord(parent: HTMLElement, word: UtteranceWord, textVariant: string) {
     const wordSpan = document.createElement('span')
     wordSpan.textContent = word.text
-    wordSpan.className = `individual-word staged-word ${textVariant} no-margin text-height-1-1`
+    wordSpan.className = `individual-word staged-word ${textVariant} no-margin`
     parent.appendChild(wordSpan)
     return wordSpan
 }

@@ -262,6 +262,7 @@ function sampleQuestionAnimation(animationName: AnimationName) {
     }
 }
 
+
 // Set the animation back to the initial state.
 function sampleQuestionAnimationCleanup(animationName: AnimationName) {
     const animation = ANIMATIONS[animationName]
@@ -293,6 +294,39 @@ function onPlayButtonIntersection(entries: IntersectionObserverEntry[]) {
     }
 }
 
+
+let FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS = 0
+// Since the sample questions are created programmatically from the CMS, they may not be in the DOM by the time this
+// script runs (even with `defer`). Attempt to fetch the components for 10 seconds before sending a Sentry alert.
+function getSampleQuestionComponents() {
+    const sampleQuestionsSlider = $('.sample-questions-slider')
+    for (const animationName of [SAMPLE_QUESTION_PRIA_ANIMATION] as AnimationName[]) {
+        // The components for these animations are programmatically created from the CMS collection, so they cannot be
+        // reliably found with a class or id. Use the audio URL to find the slide associated with this animation.
+        const slide = sampleQuestionsSlider.find(
+            `div[data-element='url']:contains('${ANIMATIONS[animationName].expectedAudioSrc}')`
+        ).closest('.sample-questions-slide')
+
+        if (slide.length) {
+            ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress')[0]
+            ANIMATIONS[animationName].karaoke.speakerElements[1].container = slide.find('.sample-question_quote-container')[0]
+            ANIMATIONS[animationName].karaoke.speakerElements[1].quote = slide.find('.sample-question_quote')[0]
+
+            // Set the initial state of the animation.
+            ANIMATIONS[animationName].cleanupAnimation()
+        } else if (FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS >= 10) {
+            Sentry.captureMessage(
+                `Could not find the components associated with animation, ${animationName}, after 10 seconds.`,
+                'warning'
+            )
+        } else {
+            FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS++
+            setTimeout(getSampleQuestionComponents, 1000)
+        }
+    }
+}
+
+
 // Set up the animations.
 (() => {
     heroAnimation()
@@ -309,25 +343,12 @@ function onPlayButtonIntersection(entries: IntersectionObserverEntry[]) {
         '[data-element=url]'
     ).innerText
 
-    const audioSourceToAnimationMap: Record<string, AnimationName> = {}
-    const sampleQuestionsSlider = $('.sample-questions-slider');
+    getSampleQuestionComponents()
+
+    const audioSourceToAnimationMap: Record<string, AnimationName> = {};
     [SAMPLE_QUESTION_PRIA_ANIMATION].forEach((animationName: AnimationName) => {
         audioSourceToAnimationMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName
-        // The components for these animations are programmatically created from the CMS collection, so they cannot be
-        // reliably found with a class or id. Use the audio URL to find the slide associated with this animation.
-        const slide = sampleQuestionsSlider.find(
-            `div[data-element='url']:contains('${ANIMATIONS[animationName].expectedAudioSrc}')`
-        ).closest('.sample-questions-slide')
-
-        ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress')[0]
-        ANIMATIONS[animationName].karaoke.speakerElements[1].container = slide.find('.sample-question_quote-container')[0]
-        ANIMATIONS[animationName].karaoke.speakerElements[1].quote = slide.find('.sample-question_quote')[0]
-
-        // Set the initial state of the animation.
-        ANIMATIONS[animationName].cleanupAnimation()
     })
-
-
     $(PLAYER).on('play', () => {
         const playerSource = $(PLAYER).find('source').attr('src')
         if (playerSource in audioSourceToAnimationMap) {

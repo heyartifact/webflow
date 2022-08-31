@@ -55,8 +55,7 @@ function moveWordIntoView(container: HTMLElement, quote: HTMLElement, wordSpan: 
 
 
 /**
- * Invoke this function from the `animations.js` script. `CURRENT_ANIMATION_INFO` is set as a global in that script and
- * will be available to reference by the time this function is invoked.
+ * Invoke this function from the `animations.js` script.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function updateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animationTime: number, karaokeState: KaraokeState | null) {

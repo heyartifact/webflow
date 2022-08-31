@@ -537,15 +537,19 @@ function getSampleQuestionComponents() {
 (() => {
     getSampleQuestionComponents()
 
-    const audioSourceToAnimationMap: Record<string, AnimationName> = {}
+    const audioSourceToAnimationNameMap: Record<string, AnimationName> = {}
     SAMPLE_QUESTION_ANIMATIONS.forEach((animationName) => {
-        audioSourceToAnimationMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName
+        audioSourceToAnimationNameMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName
     })
 
     $(PLAYER).on('play', () => {
         const playerSource = $(PLAYER).find('source').attr('src')
-        if (playerSource in audioSourceToAnimationMap) {
-            sampleQuestionAnimation(audioSourceToAnimationMap[playerSource])
+        for (const sampleQuestionAudioSrc in audioSourceToAnimationNameMap) {
+            if (playerSource === sampleQuestionAudioSrc) {
+                sampleQuestionAnimation(audioSourceToAnimationNameMap[playerSource])
+            } else {
+                sampleQuestionAnimationCleanup(audioSourceToAnimationNameMap[playerSource])
+            }
         }
     })
 })()

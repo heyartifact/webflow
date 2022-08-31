@@ -519,14 +519,19 @@ function getSampleQuestionComponents() {
 // Set up the animations.
 (function () {
     getSampleQuestionComponents();
-    var audioSourceToAnimationMap = {};
+    var audioSourceToAnimationNameMap = {};
     SAMPLE_QUESTION_ANIMATIONS.forEach(function (animationName) {
-        audioSourceToAnimationMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName;
+        audioSourceToAnimationNameMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName;
     });
     $(PLAYER).on('play', function () {
         var playerSource = $(PLAYER).find('source').attr('src');
-        if (playerSource in audioSourceToAnimationMap) {
-            sampleQuestionAnimation(audioSourceToAnimationMap[playerSource]);
+        for (var sampleQuestionAudioSrc in audioSourceToAnimationNameMap) {
+            if (playerSource === sampleQuestionAudioSrc) {
+                sampleQuestionAnimation(audioSourceToAnimationNameMap[playerSource]);
+            }
+            else {
+                sampleQuestionAnimationCleanup(audioSourceToAnimationNameMap[playerSource]);
+            }
         }
     });
 })();

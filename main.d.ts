@@ -3,10 +3,14 @@ declare const PAGE_NAME: string
 declare let PLAYER: HTMLAudioElement
 declare const Sentry: import('@sentry/types').Client
 
+type AnimationName = 'hero-video' | 'sample-question-pria' | 'your-little-one'
+
 type AnimationInfo = {
+    cleanupAnimation?: () => void
     duration: number
     expectedAudioSrc?: string
     karaoke?: KaraokeAnimationInfo
+    progressBar: HTMLElement
     progressBarSelector: string
     startAnimation: () => void
     steps: AnimationStep[]
@@ -27,7 +31,7 @@ type BlockVariant = 'basic' | 'carousel' | 'vertical-expanding'
 
 type CurrentAnimationInfo = {
     karaokeState: KaraokeState
-    name: string
+    name: AnimationName
     timeScrolledIntoView: number
 }
 

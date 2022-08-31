@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 // Instantiate the PLAYER variable in the Webflow page's head since it is needed across multiple scripts.
 PLAYER = document.querySelector('[data-element=audio-player]');
+PLAYER.addEventListener('pause', resetControllers);
 var AUDIO_TOGGLES = document.querySelectorAll('[data-element=player-toggle]');
 AUDIO_TOGGLES.forEach(function (audioToggle) {
     audioToggle.addEventListener('click', setPlayer.bind(audioToggle));
@@ -147,13 +148,13 @@ function setPlayer() {
     });
 }
 function resetControllers() {
-    AUDIO_TOGGLES.forEach(function (mediaToggle) {
+    AUDIO_TOGGLES.forEach(function (audioToggle) {
         // Note: The audio toggle buttons use either play/pause icons or mute/unmute icons, depending on whether or not
         // they autoplay muted or if the user has to take an action to start the audio.
-        var playIcon = mediaToggle.querySelector('[data-element=play]');
-        var pauseIcon = mediaToggle.querySelector('[data-element=pause]');
-        var unmuteIcon = mediaToggle.querySelector('[data-element=unmute]');
-        var muteIcon = mediaToggle.querySelector('[data-element=mute]');
+        var playIcon = audioToggle.querySelector('[data-element=play]');
+        var pauseIcon = audioToggle.querySelector('[data-element=pause]');
+        var unmuteIcon = audioToggle.querySelector('[data-element=unmute]');
+        var muteIcon = audioToggle.querySelector('[data-element=mute]');
         if (playIcon)
             playIcon.setAttribute('display', 'block');
         if (pauseIcon)

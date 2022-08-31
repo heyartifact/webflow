@@ -316,7 +316,7 @@ function onPlayButtonIntersection(entries: IntersectionObserverEntry[]) {
         // The components for these animations are programmatically created from the CMS collection, so they cannot be
         // reliably found with a class or id. Use the audio URL to find the slide associated with this animation.
         const slide = sampleQuestionsSlider.find(
-            `div[data-element]='url':contains('${ANIMATIONS[animationName].expectedAudioSrc}')`
+            `div[data-element='url']:contains('${ANIMATIONS[animationName].expectedAudioSrc}')`
         ).closest('.sample-questions-slide')
 
         ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress')[0]

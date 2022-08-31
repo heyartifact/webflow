@@ -288,7 +288,7 @@ function onPlayButtonIntersection(entries) {
         audioSourceToAnimationMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName;
         // The components for these animations are programmatically created from the CMS collection, so they cannot be
         // reliably found with a class or id. Use the audio URL to find the slide associated with this animation.
-        var slide = sampleQuestionsSlider.find("div[data-element]='url':contains('".concat(ANIMATIONS[animationName].expectedAudioSrc, "')")).closest('.sample-questions-slide');
+        var slide = sampleQuestionsSlider.find("div[data-element='url']:contains('".concat(ANIMATIONS[animationName].expectedAudioSrc, "')")).closest('.sample-questions-slide');
         ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress')[0];
         ANIMATIONS[animationName].karaoke.speakerElements[1].container = slide.find('.sample-question_quote-container')[0];
         ANIMATIONS[animationName].karaoke.speakerElements[1].quote = slide.find('.sample-question_quote')[0];

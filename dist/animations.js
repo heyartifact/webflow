@@ -18,13 +18,14 @@ var SAMPLE_QUESTION_ANIMATIONS = [
  *
  * For karaoke animations:
  *      The keys in the `speakerElements` object should match the speaker ids in the utterances.
+ *      The value for `textVariant` will be added as a class to the spans for the karaoke words.
  */
 var ANIMATIONS = (_a = {},
     /**
      * Sample question animations.
      * Manually set the utterance start time to 0 to ensure that the quote populates on page load, even before the audio
      * starts playing.
-     * Leave the `container`, `quote`, and `progressBar` properties as null, they will need to be programmatically
+     * Leave the `container`, `quote`, and `progressBar` properties as `null`, they will need to be programmatically
      * retrieved.
      */
     _a[SAMPLE_QUESTION_ANNA_ANIMATION] = {
@@ -530,6 +531,9 @@ function getSampleQuestionComponents() {
                 sampleQuestionAnimation(audioSourceToAnimationNameMap[sampleQuestionAudioSrc]);
             }
             else {
+                // A karaoke animation could be paused halfway through even though the audio will restart from the
+                // beginning when the play button is clicked again. Reset the animation so the words are all
+                // semi-transparent and the progress bar goes back to 0%.
                 sampleQuestionAnimationCleanup(audioSourceToAnimationNameMap[sampleQuestionAudioSrc]);
             }
         }

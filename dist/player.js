@@ -58,7 +58,7 @@ function getAnalyticsEventProperties(eventName, toggleTarget) {
         return getEventProperties(eventName, toggleTarget);
     }
     else {
-        Sentry.captureMessage('`getEventProperties` was called before it was loaded.');
+        safelyCaptureMessage('`getEventProperties` was called before it was loaded.');
         return {};
     }
 }
@@ -68,7 +68,7 @@ function sendAnalyticsEvent(eventName, eventProperties) {
         sendEvent(eventName, eventProperties);
     }
     else {
-        Sentry.captureMessage('`sendEvent` was called before it was loaded.');
+        safelyCaptureMessage('`sendEvent` was called before it was loaded.');
     }
 }
 // Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
@@ -170,11 +170,11 @@ function findAssociatedVideo(videoToggle) {
     // revised.
     var videos = $(videoToggle).parent().find('video');
     if (videos.length === 0) {
-        Sentry.captureMessage('A video toggle button does not have an associated video.');
+        safelyCaptureMessage('A video toggle button does not have an associated video.');
         return null;
     }
     else if (videos.length > 1) {
-        Sentry.captureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info');
+        safelyCaptureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info');
     }
     return videos.first();
 }

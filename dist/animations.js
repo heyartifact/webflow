@@ -458,7 +458,7 @@ function attemptUpdateKaraoke(karaokeAnimationInfo, animationTime, karaokeState)
         // Assuming the animation runs at 60 FPS, this will give about ten seconds of cushion before sending a Sentry
         // error.
         if (FAILED_KARAOKE_UPDATE_ATTEMPTS === 600) {
-            Sentry.captureMessage('`updateKaraoke` was not loaded properly.', 'warning');
+            safelyCaptureMessage('`updateKaraoke` was not loaded properly.', 'warning');
         }
         return null;
     }
@@ -509,7 +509,7 @@ function getSampleQuestionComponents() {
             ANIMATIONS[animationName].cleanupAnimation();
         }
         else if (FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS >= 10) {
-            Sentry.captureMessage("Could not find the components associated with animation, ".concat(animationName, ", after 10 seconds."), 'warning');
+            safelyCaptureMessage("Could not find the components associated with animation, ".concat(animationName, ", after 10 seconds."), 'warning');
         }
         else {
             FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS++;

@@ -29,7 +29,7 @@ function getAnalyticsEventProperties(eventName: string, toggleTarget: HTMLElemen
         // eslint-disable-next-line no-undef
         return getEventProperties(eventName, toggleTarget)
     } else {
-        Sentry.captureMessage('`getEventProperties` was called before it was loaded.')
+        safelyCaptureMessage('`getEventProperties` was called before it was loaded.')
         return {}
     }
 }
@@ -40,7 +40,7 @@ function sendAnalyticsEvent(eventName: string, eventProperties: EventProperties)
         // eslint-disable-next-line no-undef
         sendEvent(eventName, eventProperties)
     } else {
-        Sentry.captureMessage('`sendEvent` was called before it was loaded.')
+        safelyCaptureMessage('`sendEvent` was called before it was loaded.')
     }
 }
 
@@ -137,10 +137,10 @@ function findAssociatedVideo(videoToggle: Element) {
     // revised.
     const videos = $(videoToggle).parent().find('video')
     if (videos.length === 0) {
-        Sentry.captureMessage('A video toggle button does not have an associated video.')
+        safelyCaptureMessage('A video toggle button does not have an associated video.')
         return null
     } else if (videos.length > 1) {
-        Sentry.captureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info')
+        safelyCaptureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info')
     }
     return videos.first()
 }

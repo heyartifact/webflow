@@ -1,7 +1,8 @@
-
 declare const PAGE_NAME: string
 declare let player: HTMLAudioElement
 declare const Sentry: import('@sentry/types').Client
+
+type SeverityLevel = import('@sentry/types').SeverityLevel
 
 type AnimationName = (
     'sample-question-anna' | 'sample-question-george' | 'sample-question-julie' | 'sample-question-mike' |

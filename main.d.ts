@@ -3,7 +3,10 @@ declare const PAGE_NAME: string
 declare let PLAYER: HTMLAudioElement
 declare const Sentry: import('@sentry/types').Client
 
-type AnimationName = 'hero-video' | 'sample-question-pria' | 'your-little-one'
+type AnimationName = (
+    'hero-video' | 'sample-question-anna' | 'sample-question-george' | 'sample-question-julie' |
+    'sample-question-mike' | 'sample-question-pria' | 'sample-question-ruthie' | 'your-little-one'
+)
 
 type AnimationInfo = {
     cleanupAnimation?: () => void

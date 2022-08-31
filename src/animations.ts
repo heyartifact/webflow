@@ -201,7 +201,7 @@ function attemptUpdateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animat
 
 function setRadialProgressBar(animation: AnimationInfo, animationTime: number) {
     const audioProgress = animationTime / animation.duration
-    const audioProgressBar = $<SVGCircleElement>(animation.progressBarSelector)
+    const audioProgressBar = $(animation.progressBar)
     const strokeOffset = (1 - audioProgress) * 2 * Math.PI * parseInt(audioProgressBar.attr('r'))
     audioProgressBar.css({ strokeDashoffset: strokeOffset })
 }
@@ -308,7 +308,7 @@ function getSampleQuestionComponents() {
         ).closest('.sample-questions-slide')
 
         if (slide.length) {
-            ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress circle')[0]
+            ANIMATIONS[animationName].progressBar = $(slide).find('.sample-question_button-progress circle')[0] as unknown as SVGCircleElement
             ANIMATIONS[animationName].karaoke.speakerElements[1].container = slide.find('.sample-question_quote-container')[0]
             ANIMATIONS[animationName].karaoke.speakerElements[1].quote = slide.find('.sample-question_quote')[0]
 

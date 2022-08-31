@@ -10,7 +10,7 @@ type AnimationInfo = {
     duration: number
     expectedAudioSrc?: string
     karaoke?: KaraokeAnimationInfo
-    progressBar: HTMLElement
+    progressBar: SVGCircleElement
     progressBarSelector: string
     startAnimation: () => void
     steps: AnimationStep[]

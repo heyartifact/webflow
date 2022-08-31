@@ -523,6 +523,7 @@ function getSampleQuestionComponents() {
     $(PLAYER).on('play', function () {
         var playerSource = $(PLAYER).find('source').attr('src');
         if (playerSource in audioSourceToAnimationMap) {
+            CURRENT_ANIMATION_INFO.karaokeState = null;
             sampleQuestionAnimation(audioSourceToAnimationMap[playerSource]);
         }
     });

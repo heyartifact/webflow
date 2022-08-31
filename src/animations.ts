@@ -308,7 +308,7 @@ function getSampleQuestionComponents() {
         ).closest('.sample-questions-slide')
 
         if (slide.length) {
-            ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress')[0]
+            ANIMATIONS[animationName].progressBar = slide.find('.sample-question_button-progress circle')[0]
             ANIMATIONS[animationName].karaoke.speakerElements[1].container = slide.find('.sample-question_quote-container')[0]
             ANIMATIONS[animationName].karaoke.speakerElements[1].quote = slide.find('.sample-question_quote')[0]
 

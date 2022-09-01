@@ -35,7 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 // Instantiate the PLAYER variable in the Webflow page's head since it is needed across multiple scripts.
-PLAYER = document.querySelector('[data-element=audio-player]');
+player = document.querySelector('[data-element=audio-player]');
+player.addEventListener('pause', resetControllers);
 var AUDIO_TOGGLES = document.querySelectorAll('[data-element=player-toggle]');
 AUDIO_TOGGLES.forEach(function (audioToggle) {
     audioToggle.addEventListener('click', setPlayer.bind(audioToggle));
@@ -57,7 +58,7 @@ function getAnalyticsEventProperties(eventName, toggleTarget) {
         return getEventProperties(eventName, toggleTarget);
     }
     else {
-        Sentry.captureMessage('`getEventProperties` was called before it was loaded.');
+        safelyCaptureMessage('`getEventProperties` was called before it was loaded.');
         return {};
     }
 }
@@ -67,7 +68,7 @@ function sendAnalyticsEvent(eventName, eventProperties) {
         sendEvent(eventName, eventProperties);
     }
     else {
-        Sentry.captureMessage('`sendEvent` was called before it was loaded.');
+        safelyCaptureMessage('`sendEvent` was called before it was loaded.');
     }
 }
 // Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
@@ -77,8 +78,8 @@ function syncAudioPlayerAndAnimation() {
         if (CURRENT_ANIMATION_INFO.name in ANIMATIONS) {
             // eslint-disable-next-line no-undef
             var animation = ANIMATIONS[CURRENT_ANIMATION_INFO.name];
-            if (PLAYER.querySelector('source').src === animation.expectedAudioSrc) {
-                PLAYER.currentTime = ((
+            if (player.querySelector('source').src === animation.expectedAudioSrc) {
+                player.currentTime = ((
                 // eslint-disable-next-line no-undef
                 (new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView) % animation.duration) / 1000;
             }
@@ -105,24 +106,24 @@ function setPlayer() {
             playUnmuteIconPlayer = this.querySelector('[data-element=play], [data-element=unmute]');
             pauseMuteIconPlayer = this.querySelector('[data-element=pause], [data-element=mute]');
             audioUrl = this.querySelector('[data-element=url]').innerText;
-            playerSrc = PLAYER.querySelector('source').src;
+            playerSrc = player.querySelector('source').src;
             if (playerSrc.length !== 1 && playerSrc === audioUrl) {
-                if (!PLAYER.paused) {
+                if (!player.paused) {
                     playUnmuteIconPlayer.setAttribute('display', 'block');
                     pauseMuteIconPlayer.setAttribute('display', 'none');
-                    PLAYER.pause();
+                    player.pause();
                 }
                 else {
                     playUnmuteIconPlayer.setAttribute('display', 'none');
                     pauseMuteIconPlayer.setAttribute('display', 'block');
                     syncAudioPlayerAndAnimation();
-                    PLAYER.play();
+                    player.play();
                 }
             }
             else {
-                PLAYER.querySelector('source').src = audioUrl;
-                PLAYER.load();
-                PLAYER.addEventListener('canplay', function (_event) { return __awaiter(_this, void 0, void 0, function () {
+                player.querySelector('source').src = audioUrl;
+                player.load();
+                player.addEventListener('canplay', function (_event) { return __awaiter(_this, void 0, void 0, function () {
                     var eventName;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
@@ -134,7 +135,7 @@ function setPlayer() {
                                 pauseMuteIconPlayer.setAttribute('display', 'block');
                                 playUnmuteIconPlayer.setAttribute('display', 'none');
                                 syncAudioPlayerAndAnimation();
-                                PLAYER.play();
+                                player.play();
                                 eventName = 'Player Started';
                                 sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, this));
                                 return [2 /*return*/];
@@ -147,13 +148,13 @@ function setPlayer() {
     });
 }
 function resetControllers() {
-    AUDIO_TOGGLES.forEach(function (mediaToggle) {
+    AUDIO_TOGGLES.forEach(function (audioToggle) {
         // Note: The audio toggle buttons use either play/pause icons or mute/unmute icons, depending on whether or not
         // they autoplay muted or if the user has to take an action to start the audio.
-        var playIcon = mediaToggle.querySelector('[data-element=play]');
-        var pauseIcon = mediaToggle.querySelector('[data-element=pause]');
-        var unmuteIcon = mediaToggle.querySelector('[data-element=unmute]');
-        var muteIcon = mediaToggle.querySelector('[data-element=mute]');
+        var playIcon = audioToggle.querySelector('[data-element=play]');
+        var pauseIcon = audioToggle.querySelector('[data-element=pause]');
+        var unmuteIcon = audioToggle.querySelector('[data-element=unmute]');
+        var muteIcon = audioToggle.querySelector('[data-element=mute]');
         if (playIcon)
             playIcon.setAttribute('display', 'block');
         if (pauseIcon)
@@ -169,11 +170,11 @@ function findAssociatedVideo(videoToggle) {
     // revised.
     var videos = $(videoToggle).parent().find('video');
     if (videos.length === 0) {
-        Sentry.captureMessage('A video toggle button does not have an associated video.');
+        safelyCaptureMessage('A video toggle button does not have an associated video.');
         return null;
     }
     else if (videos.length > 1) {
-        Sentry.captureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info');
+        safelyCaptureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info');
     }
     return videos.first();
 }
@@ -184,7 +185,7 @@ function findAssociatedVideo(videoToggle) {
  */
 function toggleVideoMute() {
     // Ensure the audio player and video audio do not play on top of each other.
-    PLAYER.pause();
+    player.pause();
     resetControllers();
     var video = findAssociatedVideo(this);
     // A Sentry alert has already been sent if the video is not found.

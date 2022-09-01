@@ -1,15 +1,21 @@
-
 declare const PAGE_NAME: string
-declare let PLAYER: HTMLAudioElement
+declare let player: HTMLAudioElement
 declare const Sentry: import('@sentry/types').Client
 
+type SeverityLevel = import('@sentry/types').SeverityLevel
+
+type AnimationName = (
+    'sample-question-anna' | 'sample-question-george' | 'sample-question-julie' | 'sample-question-mike' |
+    'sample-question-pria' | 'sample-question-ruthie'
+)
+
 type AnimationInfo = {
+    cleanupAnimation?: () => void
     duration: number
     expectedAudioSrc?: string
     karaoke?: KaraokeAnimationInfo
-    progressBarSelector: string
+    progressBar: SVGCircleElement
     startAnimation: () => void
-    steps: AnimationStep[]
 }
 
 type AnimationStep = {
@@ -26,8 +32,7 @@ type BlockEventProperties = {
 type BlockVariant = 'basic' | 'carousel' | 'vertical-expanding'
 
 type CurrentAnimationInfo = {
-    karaokeState: KaraokeState
-    name: string
+    name: AnimationName
     timeScrolledIntoView: number
 }
 

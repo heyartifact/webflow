@@ -105,6 +105,15 @@ function getEventProperties(eventName: string, target: HTMLElement) {
 }
 
 
+// It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function safelyCaptureMessage(message: string, level: SeverityLevel = null) {
+    if (typeof Sentry !== 'undefined') {
+        Sentry.captureMessage(message, level)
+    }
+}
+
+
 // Assign a click event for any element with `data-event-name` set.
 // The element should also have the `data-event-label` and `data-event-block` custom attributes set.
 $('[data-event-name]').on('click', function() {

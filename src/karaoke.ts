@@ -1,12 +1,10 @@
-/* globals CURRENT_ANIMATION_INFO */
-
 /**
  * Append a word wrapped in a span to the provided parent node.
  */
 function appendWord(parent: HTMLElement, word: UtteranceWord, textVariant: string) {
     const wordSpan = document.createElement('span')
     wordSpan.textContent = word.text
-    wordSpan.className = `individual-word staged-word ${textVariant} no-margin text-height-1-1`
+    wordSpan.className = `individual-word staged-word ${textVariant} no-margin`
     parent.appendChild(wordSpan)
     return wordSpan
 }
@@ -57,13 +55,12 @@ function moveWordIntoView(container: HTMLElement, quote: HTMLElement, wordSpan: 
 
 
 /**
- * Invoke this function from the `animations.js` script. `CURRENT_ANIMATION_INFO` is set as a global in that script and
- * will be available to reference by the time this function is invoked.
+ * Invoke this function from the `animations.js` script.
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function updateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animationTime: number) {
-    if (!CURRENT_ANIMATION_INFO.karaokeState) {
-        CURRENT_ANIMATION_INFO.karaokeState = {
+function updateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animationTime: number, karaokeState: KaraokeState | null) {
+    if (!karaokeState) {
+        karaokeState = {
             currentQuoteStart: null,
             stagedWords: []
         }
@@ -77,26 +74,28 @@ function updateKaraoke(karaokeAnimationInfo: KaraokeAnimationInfo, animationTime
         const { container, quote } = karaokeAnimationInfo.speakerElements[currentQuote.speaker]
 
         // Check if a new quote is starting. Clean up the previous quotes and set up the new quote.
-        if (currentQuote.start !== CURRENT_ANIMATION_INFO.karaokeState.currentQuoteStart) {
+        if (currentQuote.start !== karaokeState.currentQuoteStart) {
             clearQuotes(karaokeAnimationInfo.speakerElements)
-            CURRENT_ANIMATION_INFO.karaokeState.currentQuoteStart = currentQuote.start
-            CURRENT_ANIMATION_INFO.karaokeState.stagedWords = []
+            karaokeState.currentQuoteStart = currentQuote.start
+            karaokeState.stagedWords = []
             currentQuote.words.forEach(word => {
                 const wordSpan = appendWord(quote, word, karaokeAnimationInfo.textVariant)
-                CURRENT_ANIMATION_INFO.karaokeState.stagedWords.push({element: wordSpan, ...word})
+                karaokeState.stagedWords.push({element: wordSpan, ...word})
             })
         }
 
         // Unstage all words that have been or are currently being spoken.
         while (
-            CURRENT_ANIMATION_INFO.karaokeState.stagedWords.length > 0 &&
-            currentTime >= CURRENT_ANIMATION_INFO.karaokeState.stagedWords[0].start
+            karaokeState.stagedWords.length > 0 &&
+            currentTime >= karaokeState.stagedWords[0].start
         ) {
-            const stagedWordElement = CURRENT_ANIMATION_INFO.karaokeState.stagedWords[0].element
+            const stagedWordElement = karaokeState.stagedWords[0].element
             stagedWordElement.classList.remove('staged-word')
             // Remove the spoken word from the `stagedWords` array.
-            CURRENT_ANIMATION_INFO.karaokeState.stagedWords.shift()
+            karaokeState.stagedWords.shift()
             moveWordIntoView(container, quote, stagedWordElement)
         }
     }
+
+    return karaokeState
 }

@@ -1,5 +1,6 @@
 // Instantiate the PLAYER variable in the Webflow page's head since it is needed across multiple scripts.
-PLAYER = document.querySelector('[data-element=audio-player]')
+player = document.querySelector('[data-element=audio-player]')
+player.addEventListener('pause', resetControllers)
 
 const AUDIO_TOGGLES = document.querySelectorAll('[data-element=player-toggle]')
 
@@ -28,7 +29,7 @@ function getAnalyticsEventProperties(eventName: string, toggleTarget: HTMLElemen
         // eslint-disable-next-line no-undef
         return getEventProperties(eventName, toggleTarget)
     } else {
-        Sentry.captureMessage('`getEventProperties` was called before it was loaded.')
+        safelyCaptureMessage('`getEventProperties` was called before it was loaded.')
         return {}
     }
 }
@@ -39,7 +40,7 @@ function sendAnalyticsEvent(eventName: string, eventProperties: EventProperties)
         // eslint-disable-next-line no-undef
         sendEvent(eventName, eventProperties)
     } else {
-        Sentry.captureMessage('`sendEvent` was called before it was loaded.')
+        safelyCaptureMessage('`sendEvent` was called before it was loaded.')
     }
 }
 
@@ -51,8 +52,8 @@ function syncAudioPlayerAndAnimation() {
         if (CURRENT_ANIMATION_INFO.name in ANIMATIONS) {
             // eslint-disable-next-line no-undef
             const animation = ANIMATIONS[CURRENT_ANIMATION_INFO.name]
-            if (PLAYER.querySelector('source').src === animation.expectedAudioSrc) {
-                PLAYER.currentTime = ((
+            if (player.querySelector('source').src === animation.expectedAudioSrc) {
+                player.currentTime = ((
                     // eslint-disable-next-line no-undef
                     (new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView
                 ) % animation.duration) / 1000
@@ -79,24 +80,24 @@ async function setPlayer(this: HTMLElement) {
     const playUnmuteIconPlayer = this.querySelector('[data-element=play], [data-element=unmute]')
     const pauseMuteIconPlayer = this.querySelector('[data-element=pause], [data-element=mute]')
     const audioUrl = this.querySelector<HTMLElement>('[data-element=url]').innerText
-    const playerSrc = PLAYER.querySelector('source').src
+    const playerSrc = player.querySelector('source').src
 
     if (playerSrc.length !== 1 && playerSrc === audioUrl) {
-        if (!PLAYER.paused) {
+        if (!player.paused) {
             playUnmuteIconPlayer.setAttribute('display', 'block')
             pauseMuteIconPlayer.setAttribute('display', 'none')
 
-            PLAYER.pause()
+            player.pause()
         } else {
             playUnmuteIconPlayer.setAttribute('display', 'none')
             pauseMuteIconPlayer.setAttribute('display', 'block')
             syncAudioPlayerAndAnimation()
-            PLAYER.play()
+            player.play()
         }
     } else {
-        PLAYER.querySelector('source').src = audioUrl
-        PLAYER.load()
-        PLAYER.addEventListener(
+        player.querySelector('source').src = audioUrl
+        player.load()
+        player.addEventListener(
             'canplay',
             async (_event) => {
                 playUnmuteIconPlayer.setAttribute('display', 'none')
@@ -104,7 +105,7 @@ async function setPlayer(this: HTMLElement) {
                 pauseMuteIconPlayer.setAttribute('display', 'block')
                 playUnmuteIconPlayer.setAttribute('display', 'none')
                 syncAudioPlayerAndAnimation()
-                PLAYER.play()
+                player.play()
 
                 const eventName = 'Player Started'
                 sendAnalyticsEvent(eventName, getAnalyticsEventProperties(eventName, this))
@@ -115,13 +116,13 @@ async function setPlayer(this: HTMLElement) {
 }
 
 function resetControllers() {
-    AUDIO_TOGGLES.forEach((mediaToggle) => {
+    AUDIO_TOGGLES.forEach((audioToggle) => {
         // Note: The audio toggle buttons use either play/pause icons or mute/unmute icons, depending on whether or not
         // they autoplay muted or if the user has to take an action to start the audio.
-        const playIcon = mediaToggle.querySelector('[data-element=play]')
-        const pauseIcon = mediaToggle.querySelector('[data-element=pause]')
-        const unmuteIcon = mediaToggle.querySelector('[data-element=unmute]')
-        const muteIcon = mediaToggle.querySelector('[data-element=mute]')
+        const playIcon = audioToggle.querySelector('[data-element=play]')
+        const pauseIcon = audioToggle.querySelector('[data-element=pause]')
+        const unmuteIcon = audioToggle.querySelector('[data-element=unmute]')
+        const muteIcon = audioToggle.querySelector('[data-element=mute]')
 
         if (playIcon) playIcon.setAttribute('display', 'block')
         if (pauseIcon) pauseIcon.setAttribute('display', 'none')
@@ -136,10 +137,10 @@ function findAssociatedVideo(videoToggle: Element) {
     // revised.
     const videos = $(videoToggle).parent().find('video')
     if (videos.length === 0) {
-        Sentry.captureMessage('A video toggle button does not have an associated video.')
+        safelyCaptureMessage('A video toggle button does not have an associated video.')
         return null
     } else if (videos.length > 1) {
-        Sentry.captureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info')
+        safelyCaptureMessage('Multiple videos were found associated with a video toggle button. Only the first video will be controlled by the button.', 'info')
     }
     return videos.first()
 }
@@ -152,7 +153,7 @@ function findAssociatedVideo(videoToggle: Element) {
  */
 function toggleVideoMute(this: HTMLElement): void {
     // Ensure the audio player and video audio do not play on top of each other.
-    PLAYER.pause()
+    player.pause()
     resetControllers()
 
     const video = findAssociatedVideo(this)

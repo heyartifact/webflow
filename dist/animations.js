@@ -73,7 +73,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_ANNA_ANIMATION); }
+        startAnimation: function () { return startSampleQuestionAnimation(SAMPLE_QUESTION_ANNA_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_GEORGE_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_GEORGE_ANIMATION); },
@@ -162,7 +162,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_GEORGE_ANIMATION); }
+        startAnimation: function () { return startSampleQuestionAnimation(SAMPLE_QUESTION_GEORGE_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_JULIE_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_JULIE_ANIMATION); },
@@ -259,7 +259,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_JULIE_ANIMATION); }
+        startAnimation: function () { return startSampleQuestionAnimation(SAMPLE_QUESTION_JULIE_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_MIKE_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_MIKE_ANIMATION); },
@@ -328,7 +328,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_MIKE_ANIMATION); }
+        startAnimation: function () { return startSampleQuestionAnimation(SAMPLE_QUESTION_MIKE_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_PRIA_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_PRIA_ANIMATION); },
@@ -388,7 +388,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_PRIA_ANIMATION); }
+        startAnimation: function () { return startSampleQuestionAnimation(SAMPLE_QUESTION_PRIA_ANIMATION); }
     },
     _a[SAMPLE_QUESTION_RUTHIE_ANIMATION] = {
         cleanupAnimation: function () { return sampleQuestionAnimationCleanup(SAMPLE_QUESTION_RUTHIE_ANIMATION); },
@@ -436,7 +436,7 @@ var ANIMATIONS = (_a = {},
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: function () { return sampleQuestionAnimation(SAMPLE_QUESTION_RUTHIE_ANIMATION); }
+        startAnimation: function () { return startSampleQuestionAnimation(SAMPLE_QUESTION_RUTHIE_ANIMATION); }
     },
     _a);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -469,13 +469,25 @@ function setRadialProgressBar(animation, animationTime) {
     var strokeOffset = (1 - audioProgress) * 2 * Math.PI * parseInt(audioProgressBar.attr('r'));
     audioProgressBar.css({ strokeDashoffset: strokeOffset });
 }
+function startSampleQuestionAnimation(animationName) {
+    if (CURRENT_ANIMATION_INFO.name !== animationName) {
+        CURRENT_ANIMATION_INFO.name = animationName;
+        CURRENT_ANIMATION_INFO.timeScrolledIntoView = (new Date()).valueOf();
+    }
+    sampleQuestionAnimation(animationName);
+}
 function sampleQuestionAnimation(animationName, karaokeState) {
     if (karaokeState === void 0) { karaokeState = null; }
     var animation = ANIMATIONS[animationName];
     var isSameAudio = (player.querySelector('source').src === animation.expectedAudioSrc);
     var isSameAudioPlaying = isSameAudio && !player.paused;
-    if (isSameAudioPlaying) {
-        var animationTime = player.currentTime * 1000;
+    if (isSameAudioPlaying || CURRENT_ANIMATION_INFO.name === animationName) {
+        var animationTime = isSameAudioPlaying ? player.currentTime * 1000 : ((new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView);
+        // Check if the animation has been completed.
+        if (!isSameAudioPlaying && animationTime > animation.duration) {
+            animation.cleanupAnimation();
+            return;
+        }
         setRadialProgressBar(animation, animationTime);
         karaokeState = attemptUpdateKaraoke(animation.karaoke, animationTime, karaokeState);
         window.requestAnimationFrame(function () { return sampleQuestionAnimation(animationName, karaokeState); });
@@ -490,6 +502,10 @@ function sampleQuestionAnimationCleanup(animationName) {
     var animation = ANIMATIONS[animationName];
     setRadialProgressBar(animation, 0);
     attemptUpdateKaraoke(animation.karaoke, 0, null);
+    if (CURRENT_ANIMATION_INFO.name === animationName) {
+        CURRENT_ANIMATION_INFO.name = null;
+        CURRENT_ANIMATION_INFO.timeScrolledIntoView = null;
+    }
 }
 var FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS = 0;
 // The script we use to tie Webflow's CMS into a slider will move the elements within the DOM, which can cause issues
@@ -520,24 +536,49 @@ function getSampleQuestionComponents() {
         }
     }
 }
+function onSampleQuestionSectionIntersection(entries, audioSourceToAnimationNameMap) {
+    if (entries[0].isIntersecting) {
+        // If a sample question animation is already playing, do not start a new animation.
+        if (SAMPLE_QUESTION_ANIMATIONS.indexOf(CURRENT_ANIMATION_INFO.name) >= 0)
+            return;
+        var sampleQuestionsContainer = $('.section-sample-questions .container-basic');
+        var firstAudioSource = sampleQuestionsContainer.find('div[data-element="url"]').first().text();
+        var animationName = audioSourceToAnimationNameMap[firstAudioSource];
+        if (!animationName) {
+            safelyCaptureMessage('An animation could not be found for the "Pros ask the questions" block.', 'warning');
+            return;
+        }
+        CURRENT_ANIMATION_INFO.name = animationName;
+        CURRENT_ANIMATION_INFO.timeScrolledIntoView = (new Date()).valueOf();
+        ANIMATIONS[animationName].startAnimation();
+    }
+}
 // Set up the animations.
 (function () {
-    getSampleQuestionComponents();
     var audioSourceToAnimationNameMap = {};
     SAMPLE_QUESTION_ANIMATIONS.forEach(function (animationName) {
         audioSourceToAnimationNameMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName;
     });
+    var sampleQuestionSectionObserver = new IntersectionObserver(function (entries) { return onSampleQuestionSectionIntersection(entries, audioSourceToAnimationNameMap); }, { threshold: 0.75 });
+    var sampleQuestionSection = $('.section-sample-questions');
+    if (sampleQuestionSection.length) {
+        sampleQuestionSectionObserver.observe(sampleQuestionSection[0]);
+    }
+    getSampleQuestionComponents();
     $(player).on('play', function () {
         var playerSource = $(player).find('source').attr('src');
         for (var sampleQuestionAudioSrc in audioSourceToAnimationNameMap) {
+            var animationName = audioSourceToAnimationNameMap[sampleQuestionAudioSrc];
             if (playerSource === sampleQuestionAudioSrc) {
-                sampleQuestionAnimation(audioSourceToAnimationNameMap[sampleQuestionAudioSrc]);
+                if (animationName !== CURRENT_ANIMATION_INFO.name) {
+                    ANIMATIONS[animationName].startAnimation();
+                }
             }
             else {
                 // A karaoke animation could be paused halfway through even though the audio will restart from the
                 // beginning when the play button is clicked again. Reset the animation so the words are all
                 // semi-transparent and the progress bar goes back to 0%.
-                sampleQuestionAnimationCleanup(audioSourceToAnimationNameMap[sampleQuestionAudioSrc]);
+                sampleQuestionAnimationCleanup(animationName);
             }
         }
     });

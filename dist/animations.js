@@ -492,8 +492,10 @@ function sampleQuestionAnimationCleanup(animationName) {
     attemptUpdateKaraoke(animation.karaoke, 0, null);
 }
 var FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS = 0;
-// Since the sample questions are created programmatically from the CMS, they may not be in the DOM by the time this
-// script runs (even with `defer`). Attempt to fetch the components for 10 seconds before sending a Sentry alert.
+// The script we use to tie Webflow's CMS into a slider will move the elements within the DOM, which can cause issues
+// when trying to select those elements. Attempt to fetch the components for 10 seconds before sending a Sentry alert.
+// TODO: See if we can execute the `@finsweet/attributes-cmsslider` script from this file, then only run this function
+// after that script finishes.
 function getSampleQuestionComponents() {
     var sampleQuestionsContainer = $('.section-sample-questions .container-basic');
     for (var _i = 0, SAMPLE_QUESTION_ANIMATIONS_1 = SAMPLE_QUESTION_ANIMATIONS; _i < SAMPLE_QUESTION_ANIMATIONS_1.length; _i++) {

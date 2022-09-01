@@ -54,7 +54,6 @@ VIDEO_TOGGLES.forEach(function (videoToggle) {
 // Helper to safely call a function declared in the analytics script that should be loaded.
 function getAnalyticsEventProperties(eventName, toggleTarget) {
     if (typeof getEventProperties !== 'undefined') {
-        // eslint-disable-next-line no-undef
         return getEventProperties(eventName, toggleTarget);
     }
     else {
@@ -64,7 +63,6 @@ function getAnalyticsEventProperties(eventName, toggleTarget) {
 }
 function sendAnalyticsEvent(eventName, eventProperties) {
     if (typeof sendEvent !== 'undefined') {
-        // eslint-disable-next-line no-undef
         sendEvent(eventName, eventProperties);
     }
     else {
@@ -74,14 +72,10 @@ function sendAnalyticsEvent(eventName, eventProperties) {
 // Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
 function syncAudioPlayerAndAnimation() {
     if (typeof CURRENT_ANIMATION_INFO !== 'undefined' && typeof ANIMATIONS !== 'undefined') {
-        // eslint-disable-next-line no-undef
         if (CURRENT_ANIMATION_INFO.name in ANIMATIONS) {
-            // eslint-disable-next-line no-undef
             var animation = ANIMATIONS[CURRENT_ANIMATION_INFO.name];
             if (player.querySelector('source').src === animation.expectedAudioSrc) {
-                player.currentTime = ((
-                // eslint-disable-next-line no-undef
-                (new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView) % animation.duration) / 1000;
+                player.currentTime = (((new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView) % animation.duration) / 1000;
             }
         }
     }

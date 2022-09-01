@@ -26,7 +26,6 @@ VIDEO_TOGGLES.forEach(videoToggle => {
 // Helper to safely call a function declared in the analytics script that should be loaded.
 function getAnalyticsEventProperties(eventName: string, toggleTarget: HTMLElement) {
     if (typeof getEventProperties !== 'undefined') {
-        // eslint-disable-next-line no-undef
         return getEventProperties(eventName, toggleTarget)
     } else {
         safelyCaptureMessage('`getEventProperties` was called before it was loaded.')
@@ -37,7 +36,6 @@ function getAnalyticsEventProperties(eventName: string, toggleTarget: HTMLElemen
 
 function sendAnalyticsEvent(eventName: string, eventProperties: EventProperties) {
     if (typeof sendEvent !== 'undefined') {
-        // eslint-disable-next-line no-undef
         sendEvent(eventName, eventProperties)
     } else {
         safelyCaptureMessage('`sendEvent` was called before it was loaded.')
@@ -48,13 +46,10 @@ function sendAnalyticsEvent(eventName: string, eventProperties: EventProperties)
 // Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
 function syncAudioPlayerAndAnimation() {
     if (typeof CURRENT_ANIMATION_INFO !== 'undefined' && typeof ANIMATIONS !== 'undefined') {
-        // eslint-disable-next-line no-undef
         if (CURRENT_ANIMATION_INFO.name in ANIMATIONS) {
-            // eslint-disable-next-line no-undef
             const animation = ANIMATIONS[CURRENT_ANIMATION_INFO.name]
             if (player.querySelector('source').src === animation.expectedAudioSrc) {
                 player.currentTime = ((
-                    // eslint-disable-next-line no-undef
                     (new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView
                 ) % animation.duration) / 1000
             }

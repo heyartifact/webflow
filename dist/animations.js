@@ -541,8 +541,7 @@ function onSampleQuestionSectionIntersection(entries, audioSourceToAnimationName
         // If a sample question animation is already playing, do not start a new animation.
         if (SAMPLE_QUESTION_ANIMATIONS.indexOf(currentAnimationInfo.name) >= 0)
             return;
-        var sampleQuestionsContainer = $('.section-sample-questions .container-basic');
-        var firstAudioSource = sampleQuestionsContainer.find('div[data-element="url"]').first().text();
+        var firstAudioSource = $('.section-sample-questions .container-basic div[data-element="url"]').first().text();
         var animationName = audioSourceToAnimationNameMap[firstAudioSource];
         if (!animationName) {
             safelyCaptureMessage('An animation could not be found for the "Pros ask the questions" block.', 'warning');

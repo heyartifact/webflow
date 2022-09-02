@@ -566,8 +566,7 @@ function onSampleQuestionSectionIntersection(entries: IntersectionObserverEntry[
         // If a sample question animation is already playing, do not start a new animation.
         if (SAMPLE_QUESTION_ANIMATIONS.indexOf(currentAnimationInfo.name) >= 0) return
 
-        const sampleQuestionsContainer = $('.section-sample-questions .container-basic')
-        const firstAudioSource = sampleQuestionsContainer.find('div[data-element="url"]').first().text()
+        const firstAudioSource = $('.section-sample-questions .container-basic div[data-element="url"]').first().text()
         const animationName = audioSourceToAnimationNameMap[firstAudioSource]
 
         if (!animationName) {

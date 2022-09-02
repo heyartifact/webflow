@@ -71,11 +71,11 @@ function sendAnalyticsEvent(eventName, eventProperties) {
 }
 // Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
 function syncAudioPlayerAndAnimation() {
-    if (typeof CURRENT_ANIMATION_INFO !== 'undefined' && typeof ANIMATIONS !== 'undefined') {
-        if (CURRENT_ANIMATION_INFO.name in ANIMATIONS) {
-            var animation = ANIMATIONS[CURRENT_ANIMATION_INFO.name];
+    if (typeof currentAnimationInfo !== 'undefined' && typeof ANIMATIONS !== 'undefined') {
+        if (currentAnimationInfo.name in ANIMATIONS) {
+            var animation = ANIMATIONS[currentAnimationInfo.name];
             if (player.querySelector('source').src === animation.expectedAudioSrc) {
-                player.currentTime = (((new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView) % animation.duration) / 1000;
+                player.currentTime = (((new Date()).valueOf() - currentAnimationInfo.timeScrolledIntoView) % animation.duration) / 1000;
             }
         }
     }

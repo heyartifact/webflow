@@ -443,7 +443,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const CURRENT_ANIMATION_INFO: CurrentAnimationInfo = {
+const currentAnimationInfo: CurrentAnimationInfo = {
     name: null,
     timeScrolledIntoView: null
 }
@@ -479,9 +479,9 @@ function setRadialProgressBar(animation: AnimationInfo, animationTime: number) {
 
 
 function startSampleQuestionAnimation(animationName: AnimationName) {
-    if (CURRENT_ANIMATION_INFO.name !== animationName) {
-        CURRENT_ANIMATION_INFO.name = animationName
-        CURRENT_ANIMATION_INFO.timeScrolledIntoView = (new Date()).valueOf()
+    if (currentAnimationInfo.name !== animationName) {
+        currentAnimationInfo.name = animationName
+        currentAnimationInfo.timeScrolledIntoView = (new Date()).valueOf()
     }
     sampleQuestionAnimation(animationName)
 }
@@ -492,9 +492,9 @@ function sampleQuestionAnimation(animationName: AnimationName, karaokeState: Kar
     const isSameAudio = (player.querySelector('source').src === animation.expectedAudioSrc)
     const isSameAudioPlaying = isSameAudio && !player.paused
 
-    if (isSameAudioPlaying || CURRENT_ANIMATION_INFO.name === animationName) {
+    if (isSameAudioPlaying || currentAnimationInfo.name === animationName) {
         const animationTime = isSameAudioPlaying ? player.currentTime * 1000 : (
-            (new Date()).valueOf() - CURRENT_ANIMATION_INFO.timeScrolledIntoView
+            (new Date()).valueOf() - currentAnimationInfo.timeScrolledIntoView
         )
 
         // Check if the animation has been completed.
@@ -518,9 +518,9 @@ function sampleQuestionAnimationCleanup(animationName: AnimationName) {
     const animation = ANIMATIONS[animationName]
     setRadialProgressBar(animation, 0)
     attemptUpdateKaraoke(animation.karaoke, 0, null)
-    if (CURRENT_ANIMATION_INFO.name === animationName) {
-        CURRENT_ANIMATION_INFO.name = null
-        CURRENT_ANIMATION_INFO.timeScrolledIntoView = null
+    if (currentAnimationInfo.name === animationName) {
+        currentAnimationInfo.name = null
+        currentAnimationInfo.timeScrolledIntoView = null
     }
 }
 
@@ -564,7 +564,7 @@ function getSampleQuestionComponents() {
 function onSampleQuestionSectionIntersection(entries: IntersectionObserverEntry[], audioSourceToAnimationNameMap: Record<string, AnimationName>) {
     if (entries[0].isIntersecting) {
         // If a sample question animation is already playing, do not start a new animation.
-        if (SAMPLE_QUESTION_ANIMATIONS.indexOf(CURRENT_ANIMATION_INFO.name) >= 0) return
+        if (SAMPLE_QUESTION_ANIMATIONS.indexOf(currentAnimationInfo.name) >= 0) return
 
         const sampleQuestionsContainer = $('.section-sample-questions .container-basic')
         const firstAudioSource = sampleQuestionsContainer.find('div[data-element="url"]').first().text()
@@ -575,8 +575,8 @@ function onSampleQuestionSectionIntersection(entries: IntersectionObserverEntry[
             return
         }
 
-        CURRENT_ANIMATION_INFO.name = animationName
-        CURRENT_ANIMATION_INFO.timeScrolledIntoView = (new Date()).valueOf()
+        currentAnimationInfo.name = animationName
+        currentAnimationInfo.timeScrolledIntoView = (new Date()).valueOf()
         ANIMATIONS[animationName].startAnimation()
     }
 }
@@ -605,7 +605,7 @@ function onSampleQuestionSectionIntersection(entries: IntersectionObserverEntry[
         for (const sampleQuestionAudioSrc in audioSourceToAnimationNameMap) {
             const animationName = audioSourceToAnimationNameMap[sampleQuestionAudioSrc]
             if (playerSource === sampleQuestionAudioSrc) {
-                if (animationName !== CURRENT_ANIMATION_INFO.name) {
+                if (animationName !== currentAnimationInfo.name) {
                     ANIMATIONS[animationName].startAnimation()
                 }
             } else {

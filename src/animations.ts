@@ -562,21 +562,28 @@ function getSampleQuestionComponents() {
 
 
 function onSampleQuestionSectionIntersection(entries: IntersectionObserverEntry[], audioSourceToAnimationNameMap: Record<string, AnimationName>) {
-    if (entries[0].isIntersecting) {
-        // If a sample question animation is already playing, do not start a new animation.
-        if (SAMPLE_QUESTION_ANIMATIONS.indexOf(currentAnimationInfo.name) >= 0) return
+    if (entries.length) {
+        if (entries[0].isIntersecting) {
+            // If a sample question animation is already playing, do not start a new animation.
+            if (SAMPLE_QUESTION_ANIMATIONS.indexOf(currentAnimationInfo.name) >= 0) return
 
-        const firstAudioSource = $('.section-sample-questions .container-basic div[data-element="url"]').first().text()
-        const animationName = audioSourceToAnimationNameMap[firstAudioSource]
+            const firstAudioSource = $('.section-sample-questions .container-basic div[data-element="url"]').first().text()
+            const animationName = audioSourceToAnimationNameMap[firstAudioSource]
 
-        if (!animationName) {
-            safelyCaptureMessage('An animation could not be found for the "Pros ask the questions" block.', 'warning')
-            return
+            if (!animationName) {
+                safelyCaptureMessage('An animation could not be found for the "Pros ask the questions" block.', 'warning')
+                return
+            }
+
+            currentAnimationInfo.name = animationName
+            currentAnimationInfo.timeScrolledIntoView = (new Date()).valueOf()
+            ANIMATIONS[animationName].startAnimation()
         }
-
-        currentAnimationInfo.name = animationName
-        currentAnimationInfo.timeScrolledIntoView = (new Date()).valueOf()
-        ANIMATIONS[animationName].startAnimation()
+    } else {
+        safelyCaptureMessage(
+            'An intersection observer entry was not included when calling `onSampleQuestionSectionIntersection`.',
+            'info'
+        )
     }
 }
 

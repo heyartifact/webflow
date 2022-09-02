@@ -75,7 +75,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_ANNA_ANIMATION)
+        startAnimation: () => startSampleQuestionAnimation(SAMPLE_QUESTION_ANNA_ANIMATION)
     },
     [SAMPLE_QUESTION_GEORGE_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_GEORGE_ANIMATION),
@@ -164,7 +164,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_GEORGE_ANIMATION)
+        startAnimation: () => startSampleQuestionAnimation(SAMPLE_QUESTION_GEORGE_ANIMATION)
     },
     [SAMPLE_QUESTION_JULIE_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_JULIE_ANIMATION),
@@ -261,7 +261,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_JULIE_ANIMATION)
+        startAnimation: () => startSampleQuestionAnimation(SAMPLE_QUESTION_JULIE_ANIMATION)
     },
     [SAMPLE_QUESTION_MIKE_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_MIKE_ANIMATION),
@@ -330,7 +330,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_MIKE_ANIMATION)
+        startAnimation: () => startSampleQuestionAnimation(SAMPLE_QUESTION_MIKE_ANIMATION)
     },
     [SAMPLE_QUESTION_PRIA_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_PRIA_ANIMATION),
@@ -390,7 +390,7 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_PRIA_ANIMATION)
+        startAnimation: () => startSampleQuestionAnimation(SAMPLE_QUESTION_PRIA_ANIMATION)
     },
     [SAMPLE_QUESTION_RUTHIE_ANIMATION]: {
         cleanupAnimation: () => sampleQuestionAnimationCleanup(SAMPLE_QUESTION_RUTHIE_ANIMATION),
@@ -438,12 +438,12 @@ const ANIMATIONS: Record<AnimationName, AnimationInfo> = {
             utterancesStartOffset: 0
         },
         progressBar: null,
-        startAnimation: () => sampleQuestionAnimation(SAMPLE_QUESTION_RUTHIE_ANIMATION)
+        startAnimation: () => startSampleQuestionAnimation(SAMPLE_QUESTION_RUTHIE_ANIMATION)
     }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const CURRENT_ANIMATION_INFO: CurrentAnimationInfo = {
+const currentAnimationInfo: CurrentAnimationInfo = {
     name: null,
     timeScrolledIntoView: null
 }
@@ -478,13 +478,31 @@ function setRadialProgressBar(animation: AnimationInfo, animationTime: number) {
 }
 
 
+function startSampleQuestionAnimation(animationName: AnimationName) {
+    if (currentAnimationInfo.name !== animationName) {
+        currentAnimationInfo.name = animationName
+        currentAnimationInfo.timeScrolledIntoView = (new Date()).valueOf()
+    }
+    sampleQuestionAnimation(animationName)
+}
+
+
 function sampleQuestionAnimation(animationName: AnimationName, karaokeState: KaraokeState = null) {
     const animation = ANIMATIONS[animationName]
     const isSameAudio = (player.querySelector('source').src === animation.expectedAudioSrc)
     const isSameAudioPlaying = isSameAudio && !player.paused
 
-    if (isSameAudioPlaying) {
-        const animationTime = player.currentTime * 1000
+    if (isSameAudioPlaying || currentAnimationInfo.name === animationName) {
+        const animationTime = isSameAudioPlaying ? player.currentTime * 1000 : (
+            (new Date()).valueOf() - currentAnimationInfo.timeScrolledIntoView
+        )
+
+        // Check if the animation has been completed.
+        if (!isSameAudioPlaying && animationTime > animation.duration) {
+            animation.cleanupAnimation()
+            return
+        }
+
         setRadialProgressBar(animation, animationTime)
         karaokeState = attemptUpdateKaraoke(animation.karaoke, animationTime, karaokeState)
         window.requestAnimationFrame(() => sampleQuestionAnimation(animationName, karaokeState))
@@ -500,6 +518,10 @@ function sampleQuestionAnimationCleanup(animationName: AnimationName) {
     const animation = ANIMATIONS[animationName]
     setRadialProgressBar(animation, 0)
     attemptUpdateKaraoke(animation.karaoke, 0, null)
+    if (currentAnimationInfo.name === animationName) {
+        currentAnimationInfo.name = null
+        currentAnimationInfo.timeScrolledIntoView = null
+    }
 }
 
 
@@ -539,25 +561,64 @@ function getSampleQuestionComponents() {
 }
 
 
+function onSampleQuestionSectionIntersection(entries: IntersectionObserverEntry[], audioSourceToAnimationNameMap: Record<string, AnimationName>) {
+    if (entries.length) {
+        if (entries[0].isIntersecting) {
+            // If a sample question animation is already playing, do not start a new animation.
+            if (SAMPLE_QUESTION_ANIMATIONS.indexOf(currentAnimationInfo.name) >= 0) return
+
+            const firstAudioSource = $('.section-sample-questions .container-basic div[data-element="url"]').first().text()
+            const animationName = audioSourceToAnimationNameMap[firstAudioSource]
+
+            if (!animationName) {
+                safelyCaptureMessage('An animation could not be found for the "Pros ask the questions" block.', 'warning')
+                return
+            }
+
+            currentAnimationInfo.name = animationName
+            currentAnimationInfo.timeScrolledIntoView = (new Date()).valueOf()
+            ANIMATIONS[animationName].startAnimation()
+        }
+    } else {
+        safelyCaptureMessage(
+            'An intersection observer entry was not included when calling `onSampleQuestionSectionIntersection`.',
+            'info'
+        )
+    }
+}
+
+
 // Set up the animations.
 (() => {
-    getSampleQuestionComponents()
-
     const audioSourceToAnimationNameMap: Record<string, AnimationName> = {}
     SAMPLE_QUESTION_ANIMATIONS.forEach((animationName) => {
         audioSourceToAnimationNameMap[ANIMATIONS[animationName].expectedAudioSrc] = animationName
     })
 
+    const sampleQuestionSectionObserver = new IntersectionObserver(
+        entries => onSampleQuestionSectionIntersection(entries, audioSourceToAnimationNameMap),
+        { threshold: 0.75 }
+    )
+    const sampleQuestionSection = $('.section-sample-questions')
+    if (sampleQuestionSection.length) {
+        sampleQuestionSectionObserver.observe(sampleQuestionSection[0])
+    }
+
+    getSampleQuestionComponents()
+
     $(player).on('play', () => {
         const playerSource = $(player).find('source').attr('src')
         for (const sampleQuestionAudioSrc in audioSourceToAnimationNameMap) {
+            const animationName = audioSourceToAnimationNameMap[sampleQuestionAudioSrc]
             if (playerSource === sampleQuestionAudioSrc) {
-                sampleQuestionAnimation(audioSourceToAnimationNameMap[sampleQuestionAudioSrc])
+                if (animationName !== currentAnimationInfo.name) {
+                    ANIMATIONS[animationName].startAnimation()
+                }
             } else {
                 // A karaoke animation could be paused halfway through even though the audio will restart from the
                 // beginning when the play button is clicked again. Reset the animation so the words are all
                 // semi-transparent and the progress bar goes back to 0%.
-                sampleQuestionAnimationCleanup(audioSourceToAnimationNameMap[sampleQuestionAudioSrc])
+                sampleQuestionAnimationCleanup(animationName)
             }
         }
     })

@@ -1,6 +1,7 @@
 if (typeof analytics !== 'undefined') {
     analytics.page('Landing', {
-        variation: PAGE_NAME
+        variation: PAGE_NAME,
+        ...getGoogleAnalyticsProperties()
     })
 }
 
@@ -12,11 +13,32 @@ for (const delay of [5, 15, 30, 45]) {
 }
 
 
+/**
+ * Attempt to fetch the experiment group from the globals that Google Analytics provides.
+ */
+function getGoogleAnalyticsProperties() {
+    if (typeof gaData !== 'undefined') {
+        // Assumes there is not more than one universal analytics tracking id for the page.
+        const universalAnalyticsTrackingId = Object.keys(gaData).find(key => key.startsWith('UA-'))
+        // Check that a tracking id was found and that the experiments object exists.
+        if (universalAnalyticsTrackingId && gaData[universalAnalyticsTrackingId].experiments) {
+            const experimentIds = Object.keys(gaData[universalAnalyticsTrackingId].experiments)
+            // Make sure `experiments` isn't an empty object.
+            if (experimentIds.length) {
+                return {experiment_group: gaData[universalAnalyticsTrackingId].experiments[experimentIds[0]]}
+            }
+        }
+    }
+    return {}
+}
+
+
 function sendEvent(name: string, properties: Record<string, unknown>) {
     // Ensure that analytics has loaded before trying to send an event.
     if (typeof analytics !== 'undefined') {
         analytics.track(name, {
             page: PAGE_NAME,
+            ...getGoogleAnalyticsProperties(),
             ...properties
         })
     }

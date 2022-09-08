@@ -1,3 +1,4 @@
+declare const gaData: Record<string, {'experiments'?: Record<string, string>}>
 declare const PAGE_NAME: string
 declare let player: HTMLAudioElement
 declare const Sentry: import('@sentry/types').Client

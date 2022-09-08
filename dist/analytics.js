@@ -10,9 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 if (typeof analytics !== 'undefined') {
-    analytics.page('Landing', {
-        variation: PAGE_NAME
-    });
+    analytics.page('Landing', __assign({ variation: PAGE_NAME }, getGoogleAnalyticsProperties()));
 }
 var _loop_1 = function (delay) {
     setTimeout(function () { return sendEvent('TimeOnPageThreshold Reached', {
@@ -24,10 +22,28 @@ for (var _i = 0, _a = [5, 15, 30, 45]; _i < _a.length; _i++) {
     var delay = _a[_i];
     _loop_1(delay);
 }
+/**
+ * Attempt to fetch the experiment group from the globals that Google Analytics provides.
+ */
+function getGoogleAnalyticsProperties() {
+    if (typeof gaData !== 'undefined') {
+        // Assumes there is not more than one universal analytics tracking id for the page.
+        var universalAnalyticsTrackingId = Object.keys(gaData).find(function (key) { return key.startsWith('UA-'); });
+        // Check that a tracking id was found and that the experiments object exists.
+        if (universalAnalyticsTrackingId && gaData[universalAnalyticsTrackingId].experiments) {
+            var experimentIds = Object.keys(gaData[universalAnalyticsTrackingId].experiments);
+            // Make sure `experiments` isn't an empty object.
+            if (experimentIds.length) {
+                return { experiment_group: gaData[universalAnalyticsTrackingId].experiments[experimentIds[0]] };
+            }
+        }
+    }
+    return {};
+}
 function sendEvent(name, properties) {
     // Ensure that analytics has loaded before trying to send an event.
     if (typeof analytics !== 'undefined') {
-        analytics.track(name, __assign({ page: PAGE_NAME }, properties));
+        analytics.track(name, __assign(__assign({ page: PAGE_NAME }, getGoogleAnalyticsProperties()), properties));
     }
 }
 function getBlockProperties(block) {

@@ -26,17 +26,22 @@ for (var _i = 0, _a = [5, 15, 30, 45]; _i < _a.length; _i++) {
  * Attempt to fetch the experiment group from the globals that Google Analytics provides.
  */
 function getGoogleAnalyticsProperties() {
-    if (typeof gaData !== 'undefined') {
-        // Assumes there is not more than one universal analytics tracking id for the page.
-        var universalAnalyticsTrackingId = Object.keys(gaData).find(function (key) { return key.startsWith('UA-'); });
-        // Check that a tracking id was found and that the experiments object exists.
-        if (universalAnalyticsTrackingId && gaData[universalAnalyticsTrackingId].experiments) {
-            var experimentIds = Object.keys(gaData[universalAnalyticsTrackingId].experiments);
-            // Make sure `experiments` isn't an empty object.
-            if (experimentIds.length) {
-                return { experiment_group: gaData[universalAnalyticsTrackingId].experiments[experimentIds[0]] };
-            }
+    var cookieString = document.cookie;
+    var cookies = cookieString.split('; ');
+    var experimentCookie = cookies.find(function (cookie) { return cookie.startsWith('_gaexp='); });
+    // Check to see if a cookie was found and that the google_optimize global exists. If either of these are falsey,
+    // then it should be safe to assume that we are not running A/B testing.
+    if (experimentCookie && google_optimize) {
+        var experimentGroup = void 0;
+        var experimentCookieParts = experimentCookie.split('.');
+        if (experimentCookieParts.length === 5) {
+            var experimentId = experimentCookieParts[2];
+            experimentGroup = google_optimize.get(experimentId);
         }
+        if (typeof experimentGroup === 'undefined') {
+            safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning');
+        }
+        return { experiment_group: experimentGroup };
     }
     return {};
 }

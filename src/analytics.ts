@@ -17,17 +17,22 @@ for (const delay of [5, 15, 30, 45]) {
  * Attempt to fetch the experiment group from the globals that Google Analytics provides.
  */
 function getGoogleAnalyticsProperties() {
-    if (typeof gaData !== 'undefined') {
-        // Assumes there is not more than one universal analytics tracking id for the page.
-        const universalAnalyticsTrackingId = Object.keys(gaData).find(key => key.startsWith('UA-'))
-        // Check that a tracking id was found and that the experiments object exists.
-        if (universalAnalyticsTrackingId && gaData[universalAnalyticsTrackingId].experiments) {
-            const experimentIds = Object.keys(gaData[universalAnalyticsTrackingId].experiments)
-            // Make sure `experiments` isn't an empty object.
-            if (experimentIds.length) {
-                return {experiment_group: gaData[universalAnalyticsTrackingId].experiments[experimentIds[0]]}
-            }
+    const cookieString = document.cookie
+    const cookies = cookieString.split('; ')
+    const experimentCookie = cookies.find(cookie => cookie.startsWith('_gaexp='))
+    // Check to see if a cookie was found and that the google_optimize global exists. If either of these are falsey,
+    // then it should be safe to assume that we are not running A/B testing.
+    if (experimentCookie && google_optimize) {
+        let experimentGroup
+        const experimentCookieParts = experimentCookie.split('.')
+        if (experimentCookieParts.length === 5) {
+            const experimentId = experimentCookieParts[2]
+            experimentGroup = google_optimize.get(experimentId)
         }
+        if (typeof experimentGroup === 'undefined') {
+            safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning')
+        }
+        return {experiment_group: experimentGroup}
     }
     return {}
 }

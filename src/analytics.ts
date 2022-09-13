@@ -39,7 +39,7 @@ function getGoogleAnalyticsProperties() {
             const experimentGroup = google_optimize.get(experimentId)
 
             if (experimentGroup) {
-                return {experiment_group: experimentGroup}
+                return { experiment_group: experimentGroup, experiment_id: experimentId }
             }
         }
         safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning')

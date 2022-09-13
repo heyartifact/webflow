@@ -45,7 +45,7 @@ function getGoogleAnalyticsProperties() {
             // google_optimize.get will return undefined if the experiment is not found or is not running.
             var experimentGroup = google_optimize.get(experimentId);
             if (experimentGroup) {
-                return { experiment_group: experimentGroup };
+                return { experiment_group: experimentGroup, experiment_id: experimentId };
             }
         }
         safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning');

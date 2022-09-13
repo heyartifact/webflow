@@ -10,9 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 if (typeof analytics !== 'undefined') {
-    analytics.page('Landing', {
-        variation: PAGE_NAME
-    });
+    analytics.page('Landing', __assign({ variation: PAGE_NAME }, getGoogleAnalyticsProperties()));
 }
 var _loop_1 = function (delay) {
     setTimeout(function () { return sendEvent('TimeOnPageThreshold Reached', {
@@ -24,10 +22,40 @@ for (var _i = 0, _a = [5, 15, 30, 45]; _i < _a.length; _i++) {
     var delay = _a[_i];
     _loop_1(delay);
 }
+/**
+ * Attempt to fetch the experiment group from the globals that Google Analytics provides.
+ * If we change experiments, the old experiment may still exist in the cookie.
+ * Example cookie: _gaexp=GAX1.2.OLD_EXPERIMENT_ID.19285.1!NEW_EXPERIMENT_ID.19286.0
+ */
+function getGoogleAnalyticsProperties() {
+    var cookieString = document.cookie;
+    var cookies = cookieString.split('; ');
+    var experimentCookie = cookies.find(function (cookie) { return cookie.startsWith('_gaexp='); });
+    // Check to see if a cookie was found and that the google_optimize global exists. If either of these are falsey,
+    // then it should be safe to assume that we are not running A/B testing.
+    if (experimentCookie && google_optimize) {
+        // Remove the first two generic parts of the cookie, then split the string into individual experiments.
+        var experiments = experimentCookie.split('.').slice(2).join('.').split('!');
+        for (var _i = 0, experiments_1 = experiments; _i < experiments_1.length; _i++) {
+            var experiment = experiments_1[_i];
+            var experimentParts = experiment.split('.');
+            if (experimentParts.length === 0)
+                continue;
+            var experimentId = experiment.split('.')[0];
+            // google_optimize.get will return undefined if the experiment is not found or is not running.
+            var experimentGroup = google_optimize.get(experimentId);
+            if (experimentGroup) {
+                return { experiment_group: experimentGroup, experiment_id: experimentId };
+            }
+        }
+        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning');
+    }
+    return {};
+}
 function sendEvent(name, properties) {
     // Ensure that analytics has loaded before trying to send an event.
     if (typeof analytics !== 'undefined') {
-        analytics.track(name, __assign({ page: PAGE_NAME }, properties));
+        analytics.track(name, __assign(__assign({ page: PAGE_NAME }, getGoogleAnalyticsProperties()), properties));
     }
 }
 function getBlockProperties(block) {

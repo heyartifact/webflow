@@ -1,6 +1,7 @@
 if (typeof analytics !== 'undefined') {
     analytics.page('Landing', {
-        variation: PAGE_NAME
+        variation: PAGE_NAME,
+        ...getGoogleAnalyticsProperties()
     })
 }
 
@@ -12,11 +13,47 @@ for (const delay of [5, 15, 30, 45]) {
 }
 
 
+/**
+ * Attempt to fetch the experiment group from the globals that Google Analytics provides.
+ * If we change experiments, the old experiment may still exist in the cookie.
+ * Example cookie: _gaexp=GAX1.2.OLD_EXPERIMENT_ID.19285.1!NEW_EXPERIMENT_ID.19286.0
+ */
+function getGoogleAnalyticsProperties() {
+    const cookieString = document.cookie
+    const cookies = cookieString.split('; ')
+    const experimentCookie = cookies.find(cookie => cookie.startsWith('_gaexp='))
+    // Check to see if a cookie was found and that the google_optimize global exists. If either of these are falsey,
+    // then it should be safe to assume that we are not running A/B testing.
+    if (experimentCookie && google_optimize) {
+        // Remove the first two generic parts of the cookie, then split the string into individual experiments.
+        const experiments = experimentCookie.split('.').slice(2).join('.').split('!')
+
+        for (const experiment of experiments) {
+            const experimentParts = experiment.split('.')
+
+            if (experimentParts.length === 0) continue
+
+            const experimentId = experiment.split('.')[0]
+
+            // google_optimize.get will return undefined if the experiment is not found or is not running.
+            const experimentGroup = google_optimize.get(experimentId)
+
+            if (experimentGroup) {
+                return { experiment_group: experimentGroup, experiment_id: experimentId }
+            }
+        }
+        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning')
+    }
+    return {}
+}
+
+
 function sendEvent(name: string, properties: Record<string, unknown>) {
     // Ensure that analytics has loaded before trying to send an event.
     if (typeof analytics !== 'undefined') {
         analytics.track(name, {
             page: PAGE_NAME,
+            ...getGoogleAnalyticsProperties(),
             ...properties
         })
     }

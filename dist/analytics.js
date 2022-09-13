@@ -24,6 +24,8 @@ for (var _i = 0, _a = [5, 15, 30, 45]; _i < _a.length; _i++) {
 }
 /**
  * Attempt to fetch the experiment group from the globals that Google Analytics provides.
+ * If we change experiments, the old experiment may still exist in the cookie.
+ * Example cookie: _gaexp=GAX1.2.OLD_EXPERIMENT_ID.19285.1!NEW_EXPERIMENT_ID.19286.0
  */
 function getGoogleAnalyticsProperties() {
     var cookieString = document.cookie;
@@ -32,16 +34,21 @@ function getGoogleAnalyticsProperties() {
     // Check to see if a cookie was found and that the google_optimize global exists. If either of these are falsey,
     // then it should be safe to assume that we are not running A/B testing.
     if (experimentCookie && google_optimize) {
-        var experimentGroup = void 0;
-        var experimentCookieParts = experimentCookie.split('.');
-        if (experimentCookieParts.length === 5) {
-            var experimentId = experimentCookieParts[2];
-            experimentGroup = google_optimize.get(experimentId);
+        // Remove the first two generic parts of the cookie, then split the string into individual experiments.
+        var experiments = experimentCookie.split('.').slice(2).join('.').split('!');
+        for (var _i = 0, experiments_1 = experiments; _i < experiments_1.length; _i++) {
+            var experiment = experiments_1[_i];
+            var experimentParts = experiment.split('.');
+            if (experimentParts.length === 0)
+                continue;
+            var experimentId = experiment.split('.')[0];
+            // google_optimize.get will return undefined if the experiment is not found or is not running.
+            var experimentGroup = google_optimize.get(experimentId);
+            if (experimentGroup) {
+                return { experiment_group: experimentGroup };
+            }
         }
-        if (typeof experimentGroup === 'undefined') {
-            safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning');
-        }
-        return { experiment_group: experimentGroup };
+        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning');
     }
     return {};
 }

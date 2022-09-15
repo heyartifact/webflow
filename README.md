@@ -49,6 +49,15 @@ Required custom attributes:
 - `data-event-block`
 - `data-event-label`
 
+### The `FAQs Opened` Event
+
+To have an element trigger this, assign the `data-event-name` attribute with a value of `FAQs Opened`. No additional
+attributes are required.
+
+This script for this relies on the opacity of the FAQ answer being changed to know when it is actually opened (we do not
+trigger an event when the FAQ is closed). If the styling/animation changes for these elements, it could impact the
+ability to track this event.
+
 ### The `Viewed Landing Page Block` Event
 
 To have an element trigger this, assign the `data-event-name` attribute with a value of `Viewed Landing Page Block`.

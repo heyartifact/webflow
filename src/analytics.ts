@@ -78,6 +78,11 @@ function getBlockProperties(block: string) {
         'your-child': 'basic'
     }
 
+    if (!(block in blockVariants)) {
+        safelyCaptureMessage(`The ${block} block is not defined getBlockProperties.`, 'warning')
+        return {}
+    }
+
     const blockProperties: BlockEventProperties = { 'block-variant': blockVariants[block] }
     if (block === 'topnav') {
         // TODO: This will not be adequate for the interactive hero section where the topnav does not get pinned until
@@ -157,6 +162,14 @@ $('[data-event-name]').on('click', function() {
     const target = $(this).closest('[data-event-name]')[0]
     const eventName = target.getAttribute('data-event-name')
     const eventProperties = getEventProperties(eventName, target)
+
+    // All click events should have a `block` property defined.
+    if (!('block' in eventProperties)) {
+        safelyCaptureMessage(
+            `The block property has not been set for a click event with the name, ${eventName}.`,
+            'warning'
+        )
+    }
 
     // `getEventProperties` will return `null` if the event should not be sent.
     if (eventProperties) sendEvent(eventName, eventProperties)

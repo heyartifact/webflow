@@ -83,7 +83,7 @@ function getBlockProperties(block) {
         'your-child': 'basic'
     };
     if (!(block in blockVariants)) {
-        safelyCaptureMessage("The ".concat(block, " block is not defined getBlockProperties."), 'warning');
+        safelyCaptureMessage("An invalid block name, ".concat(block, ", was passed to getBlockProperties."), 'warning');
         return {};
     }
     var blockProperties = { 'block-variant': blockVariants[block] };

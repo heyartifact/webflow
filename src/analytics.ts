@@ -88,7 +88,7 @@ function getBlockProperties(block: string) {
     }
 
     if (!(block in blockVariants)) {
-        safelyCaptureMessage(`The ${block} block is not defined getBlockProperties.`, 'warning')
+        safelyCaptureMessage(`An invalid block name, ${block}, was passed to getBlockProperties.`, 'warning')
         return {}
     }
 

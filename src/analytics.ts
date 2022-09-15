@@ -1,4 +1,5 @@
 const buttonClickedEventName = 'Button Clicked'
+const faqOpenedEventName = 'FAQs Opened'
 const viewedLandingPageBlockEventName = 'Viewed Landing Page Block'
 
 // We don't want to send the `Viewed Landing Page Block` event multiple times per block on the same visit, so use this
@@ -77,6 +78,7 @@ function getBlockProperties(block: string) {
         interviewers: 'carousel',
         'packages-and-pricing': 'basic',
         pricing: 'basic',
+        'sample-questions': 'carousel',
         subscribe: 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
@@ -206,9 +208,10 @@ function viewedLandingPageBlockEvent(entries: IntersectionObserverEntry[]) {
     $(`[data-event-name="${viewedLandingPageBlockEventName}"]`).each(function() { blockObserver.observe(this) })
 
     $(`[data-event-name="${buttonClickedEventName}"]`).on('click', buttonClickedEvent)
+    $(`[data-event-name="${faqOpenedEventName}"]`).on('click', buttonClickedEvent)
 
     // Send a warning if we specified an invalid event name in an element's custom attributes.
-    const expectedEventsNames = [buttonClickedEventName, viewedLandingPageBlockEventName]
+    const expectedEventsNames = [buttonClickedEventName, faqOpenedEventName, viewedLandingPageBlockEventName]
     const expectedEventSelectors = expectedEventsNames.map(eventName => `[data-event-name="${eventName}"]`).join(', ')
     $('[data-event-name]').not(expectedEventSelectors).each(function() {
         safelyCaptureMessage(

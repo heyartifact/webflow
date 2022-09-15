@@ -10,6 +10,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 var buttonClickedEventName = 'Button Clicked';
+var faqOpenedEventName = 'FAQs Opened';
 var viewedLandingPageBlockEventName = 'Viewed Landing Page Block';
 // We don't want to send the `Viewed Landing Page Block` event multiple times per block on the same visit, so use this
 // array to track which ones have been sent.
@@ -73,6 +74,7 @@ function getBlockProperties(block) {
         interviewers: 'carousel',
         'packages-and-pricing': 'basic',
         pricing: 'basic',
+        'sample-questions': 'carousel',
         subscribe: 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
@@ -181,8 +183,9 @@ function viewedLandingPageBlockEvent(entries) {
     var blockObserver = new IntersectionObserver(viewedLandingPageBlockEvent);
     $("[data-event-name=\"".concat(viewedLandingPageBlockEventName, "\"]")).each(function () { blockObserver.observe(this); });
     $("[data-event-name=\"".concat(buttonClickedEventName, "\"]")).on('click', buttonClickedEvent);
+    $("[data-event-name=\"".concat(faqOpenedEventName, "\"]")).on('click', buttonClickedEvent);
     // Send a warning if we specified an invalid event name in an element's custom attributes.
-    var expectedEventsNames = [buttonClickedEventName, viewedLandingPageBlockEventName];
+    var expectedEventsNames = [buttonClickedEventName, faqOpenedEventName, viewedLandingPageBlockEventName];
     var expectedEventSelectors = expectedEventsNames.map(function (eventName) { return "[data-event-name=\"".concat(eventName, "\"]"); }).join(', ');
     $('[data-event-name]').not(expectedEventSelectors).each(function () {
         safelyCaptureMessage("Unexpected event name specified in Webflow: ".concat($(this).attr('data-event-name'), "."), 'warning');

@@ -527,10 +527,12 @@ function sampleQuestionAnimationCleanup(animationName: AnimationName) {
 
 let FAILED_GET_SAMPLE_QUESTION_COMPONENTS_ATTEMPTS = 0
 
-// The script we use to tie Webflow's CMS into a slider will move the elements within the DOM, which can cause issues
-// when trying to select those elements. Attempt to fetch the components for 10 seconds before sending a Sentry alert.
-// TODO: See if we can execute the `@finsweet/attributes-cmsslider` script from this file, then only run this function
-// after that script finishes.
+/**
+ * The script we use to tie Webflow's CMS into a slider will move the elements within the DOM, which can cause issues
+ * when trying to select those elements. Attempt to fetch the components for 10 seconds before sending a Sentry alert.
+ * TODO: See if we can execute the `@finsweet/attributes-cmsslider` script from this file, then only run this function
+ * after that script finishes.
+ */
 function getSampleQuestionComponents() {
     const sampleQuestionsContainer = $('.section-sample-questions .container-basic')
     for (const animationName of SAMPLE_QUESTION_ANIMATIONS) {
@@ -588,7 +590,9 @@ function onSampleQuestionSectionIntersection(entries: IntersectionObserverEntry[
 }
 
 
-// Set up the animations.
+/**
+ * Set up the animations
+ */
 (() => {
     const audioSourceToAnimationNameMap: Record<string, AnimationName> = {}
     SAMPLE_QUESTION_ANIMATIONS.forEach((animationName) => {

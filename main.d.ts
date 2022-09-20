@@ -1,3 +1,4 @@
+declare const dataLayer: unknown[]
 declare const google_optimize: { get: (experimentId: string) => string | undefined}
 declare const PAGE_NAME: string
 declare let player: HTMLAudioElement

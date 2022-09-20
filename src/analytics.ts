@@ -1,5 +1,6 @@
 const buttonClickedEventName = 'Button Clicked'
 const faqOpenedEventName = 'FAQs Opened'
+const kidConversionFlowStartedEventName = 'KidConversionFlow Started'
 const viewedLandingPageBlockEventName = 'Viewed Landing Page Block'
 
 // We don't want to send the `Viewed Landing Page Block` event multiple times per block on the same visit, so use this
@@ -170,7 +171,7 @@ function safelyCaptureMessage(message: string, level: SeverityLevel = null) {
 
 function buttonClickedEvent(this: HTMLElement) {
     const target = $(this).closest('[data-event-name]')[0]
-    const eventName = target.getAttribute('data-event-name')
+    const eventName = buttonClickedEventName
     const eventProperties = getEventProperties(eventName, target)
 
     // All click events should have a `block` property defined.
@@ -183,6 +184,18 @@ function buttonClickedEvent(this: HTMLElement) {
 
     // `getEventProperties` will return `null` if the event should not be sent.
     if (eventProperties) sendEvent(eventName, eventProperties)
+}
+
+
+function kidConversionFlowStartedEvent(this: HTMLElement) {
+    // Send the button clicked event to Segment.
+    buttonClickedEvent.bind(this)()
+
+    // Send the conversion flow started event to Segment.
+    sendEvent(kidConversionFlowStartedEventName, {})
+
+    // Send the conversion flow started event to Google Tag Manager.
+    dataLayer && dataLayer.push({'event':'kid_conversion_flow_started'})
 }
 
 
@@ -210,8 +223,12 @@ function viewedLandingPageBlockEvent(entries: IntersectionObserverEntry[]) {
     $(`[data-event-name="${buttonClickedEventName}"]`).on('click', buttonClickedEvent)
     $(`[data-event-name="${faqOpenedEventName}"]`).on('click', buttonClickedEvent)
 
+    $(`[data-event-name="${kidConversionFlowStartedEventName}"]`).on('click', kidConversionFlowStartedEvent)
+
     // Send a warning if we specified an invalid event name in an element's custom attributes.
-    const expectedEventsNames = [buttonClickedEventName, faqOpenedEventName, viewedLandingPageBlockEventName]
+    const expectedEventsNames = [
+        buttonClickedEventName, faqOpenedEventName, kidConversionFlowStartedEventName, viewedLandingPageBlockEventName
+    ]
     const expectedEventSelectors = expectedEventsNames.map(eventName => `[data-event-name="${eventName}"]`).join(', ')
     $('[data-event-name]').not(expectedEventSelectors).each(function() {
         safelyCaptureMessage(

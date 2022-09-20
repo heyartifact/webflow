@@ -11,6 +11,7 @@ var __assign = (this && this.__assign) || function () {
 };
 var buttonClickedEventName = 'Button Clicked';
 var faqOpenedEventName = 'FAQs Opened';
+var kidConversionFlowStartedEventName = 'KidConversionFlow Started';
 var viewedLandingPageBlockEventName = 'Viewed Landing Page Block';
 // We don't want to send the `Viewed Landing Page Block` event multiple times per block on the same visit, so use this
 // array to track which ones have been sent.
@@ -153,7 +154,7 @@ function safelyCaptureMessage(message, level) {
 }
 function buttonClickedEvent() {
     var target = $(this).closest('[data-event-name]')[0];
-    var eventName = target.getAttribute('data-event-name');
+    var eventName = buttonClickedEventName;
     var eventProperties = getEventProperties(eventName, target);
     // All click events should have a `block` property defined.
     if (!('block' in eventProperties)) {
@@ -162,6 +163,14 @@ function buttonClickedEvent() {
     // `getEventProperties` will return `null` if the event should not be sent.
     if (eventProperties)
         sendEvent(eventName, eventProperties);
+}
+function kidConversionFlowStartedEvent() {
+    // Send the button clicked event to Segment.
+    buttonClickedEvent.bind(this)();
+    // Send the conversion flow started event to Segment.
+    sendEvent(kidConversionFlowStartedEventName, {});
+    // Send the conversion flow started event to Google Tag Manager.
+    dataLayer && dataLayer.push({ 'event': 'kid_conversion_flow_started' });
 }
 function viewedLandingPageBlockEvent(entries) {
     for (var _i = 0, entries_1 = entries; _i < entries_1.length; _i++) {
@@ -184,8 +193,11 @@ function viewedLandingPageBlockEvent(entries) {
     $("[data-event-name=\"".concat(viewedLandingPageBlockEventName, "\"]")).each(function () { blockObserver.observe(this); });
     $("[data-event-name=\"".concat(buttonClickedEventName, "\"]")).on('click', buttonClickedEvent);
     $("[data-event-name=\"".concat(faqOpenedEventName, "\"]")).on('click', buttonClickedEvent);
+    $("[data-event-name=\"".concat(kidConversionFlowStartedEventName, "\"]")).on('click', kidConversionFlowStartedEvent);
     // Send a warning if we specified an invalid event name in an element's custom attributes.
-    var expectedEventsNames = [buttonClickedEventName, faqOpenedEventName, viewedLandingPageBlockEventName];
+    var expectedEventsNames = [
+        buttonClickedEventName, faqOpenedEventName, kidConversionFlowStartedEventName, viewedLandingPageBlockEventName
+    ];
     var expectedEventSelectors = expectedEventsNames.map(function (eventName) { return "[data-event-name=\"".concat(eventName, "\"]"); }).join(', ');
     $('[data-event-name]').not(expectedEventSelectors).each(function () {
         safelyCaptureMessage("Unexpected event name specified in Webflow: ".concat($(this).attr('data-event-name'), "."), 'warning');

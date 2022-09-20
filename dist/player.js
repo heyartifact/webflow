@@ -69,7 +69,9 @@ function sendAnalyticsEvent(eventName, eventProperties) {
         safelyCaptureMessage('`sendEvent` was called before it was loaded.');
     }
 }
-// Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
+/**
+ * Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
+ */
 function syncAudioPlayerAndAnimation() {
     if (typeof currentAnimationInfo !== 'undefined' && typeof ANIMATIONS !== 'undefined') {
         if (currentAnimationInfo.name in ANIMATIONS) {

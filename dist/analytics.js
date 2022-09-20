@@ -9,6 +9,12 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var buttonClickedEventName = 'Button Clicked';
+var faqOpenedEventName = 'FAQs Opened';
+var viewedLandingPageBlockEventName = 'Viewed Landing Page Block';
+// We don't want to send the `Viewed Landing Page Block` event multiple times per block on the same visit, so use this
+// array to track which ones have been sent.
+var blocksTracked = [];
 if (typeof analytics !== 'undefined') {
     analytics.page('Landing', __assign({ variation: PAGE_NAME }, getGoogleAnalyticsProperties()));
 }
@@ -68,6 +74,7 @@ function getBlockProperties(block) {
         interviewers: 'carousel',
         'packages-and-pricing': 'basic',
         pricing: 'basic',
+        'sample-questions': 'carousel',
         subscribe: 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
@@ -75,6 +82,10 @@ function getBlockProperties(block) {
         'whats-included': 'basic',
         'your-child': 'basic'
     };
+    if (!(block in blockVariants)) {
+        safelyCaptureMessage("An invalid block name, ".concat(block, ", was passed to getBlockProperties."), 'warning');
+        return {};
+    }
     var blockProperties = { 'block-variant': blockVariants[block] };
     if (block === 'topnav') {
         // TODO: This will not be adequate for the interactive hero section where the topnav does not get pinned until
@@ -95,8 +106,10 @@ function getInterviewerPlayerEventProperties(target) {
         name: interviewerName
     };
 }
-// Take the target of an event and return an object of the relevant properties to be included in the tracking event.
-// Return `null` if the event should not be sent.
+/**
+ * Take the target of an event and return an object of the relevant properties to be included in the tracking event.
+ * Return `null` if the event should not be sent.
+ */
 function getEventProperties(eventName, target) {
     var eventProperties = {};
     var dataset = target.dataset;
@@ -129,21 +142,52 @@ function getEventProperties(eventName, target) {
     }
     return eventProperties;
 }
-// It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/**
+ * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
+ */
 function safelyCaptureMessage(message, level) {
     if (level === void 0) { level = null; }
     if (typeof Sentry !== 'undefined') {
         Sentry.captureMessage(message, level);
     }
 }
-// Assign a click event for any element with `data-event-name` set.
-// The element should also have the `data-event-label` and `data-event-block` custom attributes set.
-$('[data-event-name]').on('click', function () {
+function buttonClickedEvent() {
     var target = $(this).closest('[data-event-name]')[0];
     var eventName = target.getAttribute('data-event-name');
     var eventProperties = getEventProperties(eventName, target);
+    // All click events should have a `block` property defined.
+    if (!('block' in eventProperties)) {
+        safelyCaptureMessage("The block property has not been set for a click event with the name, ".concat(eventName, "."), 'warning');
+    }
     // `getEventProperties` will return `null` if the event should not be sent.
     if (eventProperties)
         sendEvent(eventName, eventProperties);
-});
+}
+function viewedLandingPageBlockEvent(entries) {
+    for (var _i = 0, entries_1 = entries; _i < entries_1.length; _i++) {
+        var entry = entries_1[_i];
+        if (entry.isIntersecting) {
+            var target = entry.target;
+            var blockName = $(target).attr('data-event-block');
+            if (blocksTracked.indexOf(blockName) === -1) {
+                var eventName = viewedLandingPageBlockEventName;
+                var eventProperties = getEventProperties(eventName, target);
+                sendEvent(eventName, eventProperties);
+                blocksTracked.push(blockName);
+            }
+        }
+    }
+}
+// Assign event listeners for analytics events based on the `data-event-name` attribute.
+(function () {
+    var blockObserver = new IntersectionObserver(viewedLandingPageBlockEvent);
+    $("[data-event-name=\"".concat(viewedLandingPageBlockEventName, "\"]")).each(function () { blockObserver.observe(this); });
+    $("[data-event-name=\"".concat(buttonClickedEventName, "\"]")).on('click', buttonClickedEvent);
+    $("[data-event-name=\"".concat(faqOpenedEventName, "\"]")).on('click', buttonClickedEvent);
+    // Send a warning if we specified an invalid event name in an element's custom attributes.
+    var expectedEventsNames = [buttonClickedEventName, faqOpenedEventName, viewedLandingPageBlockEventName];
+    var expectedEventSelectors = expectedEventsNames.map(function (eventName) { return "[data-event-name=\"".concat(eventName, "\"]"); }).join(', ');
+    $('[data-event-name]').not(expectedEventSelectors).each(function () {
+        safelyCaptureMessage("Unexpected event name specified in Webflow: ".concat($(this).attr('data-event-name'), "."), 'warning');
+    });
+})();

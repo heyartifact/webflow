@@ -58,6 +58,13 @@ This script for this relies on the opacity of the FAQ answer being changed to kn
 trigger an event when the FAQ is closed). If the styling/animation changes for these elements, it could impact the
 ability to track this event.
 
+### The `KidConversionFlow Started` Event
+
+To have an element trigger this, assign the `data-event-name` attribute with a value of `KidConversionFlow Started`.
+This event will trigger both the `Button Clicked` event as well as the `KidConversionFlow Started` event.
+
+Refer to the `Button Clicked` event for the required attributes.
+
 ### The `Viewed Landing Page Block` Event
 
 To have an element trigger this, assign the `data-event-name` attribute with a value of `Viewed Landing Page Block`.

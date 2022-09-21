@@ -152,9 +152,10 @@ function safelyCaptureMessage(message, level) {
         Sentry.captureMessage(message, level);
     }
 }
-function buttonClickedEvent() {
+function buttonClickedEvent(eventNameOverride) {
+    if (eventNameOverride === void 0) { eventNameOverride = null; }
     var target = $(this).closest('[data-event-name]')[0];
-    var eventName = buttonClickedEventName;
+    var eventName = eventNameOverride || buttonClickedEventName;
     var eventProperties = getEventProperties(eventName, target);
     // All click events should have a `block` property defined.
     if (!('block' in eventProperties)) {
@@ -191,8 +192,10 @@ function viewedLandingPageBlockEvent(entries) {
 (function () {
     var blockObserver = new IntersectionObserver(viewedLandingPageBlockEvent);
     $("[data-event-name=\"".concat(viewedLandingPageBlockEventName, "\"]")).each(function () { blockObserver.observe(this); });
-    $("[data-event-name=\"".concat(buttonClickedEventName, "\"]")).on('click', buttonClickedEvent);
-    $("[data-event-name=\"".concat(faqOpenedEventName, "\"]")).on('click', buttonClickedEvent);
+    $("[data-event-name=\"".concat(buttonClickedEventName, "\"]")).on('click', function () { buttonClickedEvent.bind(this)(); });
+    $("[data-event-name=\"".concat(faqOpenedEventName, "\"]")).on('click', function () {
+        buttonClickedEvent.bind(this)(faqOpenedEventName);
+    });
     $("[data-event-name=\"".concat(kidConversionFlowStartedEventName, "\"]")).on('click', kidConversionFlowStartedEvent);
     // Send a warning if we specified an invalid event name in an element's custom attributes.
     var expectedEventsNames = [

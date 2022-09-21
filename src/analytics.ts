@@ -169,9 +169,9 @@ function safelyCaptureMessage(message: string, level: SeverityLevel = null) {
 }
 
 
-function buttonClickedEvent(this: HTMLElement) {
+function buttonClickedEvent(this: HTMLElement, eventNameOverride: string = null) {
     const target = $(this).closest('[data-event-name]')[0]
-    const eventName = buttonClickedEventName
+    const eventName = eventNameOverride || buttonClickedEventName
     const eventProperties = getEventProperties(eventName, target)
 
     // All click events should have a `block` property defined.
@@ -220,8 +220,10 @@ function viewedLandingPageBlockEvent(entries: IntersectionObserverEntry[]) {
     const blockObserver = new IntersectionObserver(viewedLandingPageBlockEvent)
     $(`[data-event-name="${viewedLandingPageBlockEventName}"]`).each(function() { blockObserver.observe(this) })
 
-    $(`[data-event-name="${buttonClickedEventName}"]`).on('click', buttonClickedEvent)
-    $(`[data-event-name="${faqOpenedEventName}"]`).on('click', buttonClickedEvent)
+    $(`[data-event-name="${buttonClickedEventName}"]`).on('click', function() { buttonClickedEvent.bind(this)() })
+    $(`[data-event-name="${faqOpenedEventName}"]`).on('click', function() {
+        buttonClickedEvent.bind(this)(faqOpenedEventName)
+    })
 
     $(`[data-event-name="${kidConversionFlowStartedEventName}"]`).on('click', kidConversionFlowStartedEvent)
 

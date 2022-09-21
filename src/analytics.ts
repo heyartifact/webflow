@@ -81,6 +81,7 @@ function getBlockProperties(block: string) {
         pricing: 'basic',
         'sample-questions': 'carousel',
         subscribe: 'basic',
+        'start-building': 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
         topnav: 'basic',

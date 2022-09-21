@@ -105,7 +105,7 @@ function getBlockProperties(block: string) {
 
 
 function getFAQEventProperties(target: HTMLElement) {
-    const questionText = $(target).children().first().children().first().text()
+    const questionText = $(target).find('.question-wrapper').first().text()
     return { block: 'FAQs', name: questionText, type: 'question' }
 }
 

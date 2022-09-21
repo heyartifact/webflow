@@ -97,7 +97,7 @@ function getBlockProperties(block) {
     return blockProperties;
 }
 function getFAQEventProperties(target) {
-    var questionText = $(target).children().first().children().first().text();
+    var questionText = $(target).find('.question-wrapper').first().text();
     return { block: 'FAQs', name: questionText, type: 'question' };
 }
 function getInterviewerPlayerEventProperties(target) {

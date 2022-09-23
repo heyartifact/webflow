@@ -35,6 +35,9 @@ for (var _i = 0, _a = [5, 15, 30, 45]; _i < _a.length; _i++) {
  * Example cookie: _gaexp=GAX1.2.OLD_EXPERIMENT_ID.19285.1!NEW_EXPERIMENT_ID.19286.0
  */
 function getGoogleAnalyticsProperties() {
+    // Google Optimize is only set to run in production.
+    if (ENVIRONMENT !== 'production')
+        return {};
     var cookieString = document.cookie;
     var cookies = cookieString.split('; ');
     var experimentCookie = cookies.find(function (cookie) { return cookie.startsWith('_gaexp='); });

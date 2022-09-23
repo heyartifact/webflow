@@ -3,6 +3,8 @@ declare const google_optimize: { get: (experimentId: string) => string | undefin
 declare const PAGE_NAME: string
 declare let player: HTMLAudioElement
 declare const Sentry: import('@sentry/types').Hub
+// The environment is inferred in the project's custom code based on the domain/subdomain.
+declare const ENVIRONMENT: 'production' | 'staging' | 'testing'
 
 type SeverityLevel = import('@sentry/types').SeverityLevel
 

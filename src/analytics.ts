@@ -28,6 +28,9 @@ for (const delay of [5, 15, 30, 45]) {
  * Example cookie: _gaexp=GAX1.2.OLD_EXPERIMENT_ID.19285.1!NEW_EXPERIMENT_ID.19286.0
  */
 function getGoogleAnalyticsProperties() {
+    // Google Optimize is only set to run in production.
+    if (ENVIRONMENT !== 'production') return {}
+
     const cookieString = document.cookie
     const cookies = cookieString.split('; ')
     const experimentCookie = cookies.find(cookie => cookie.startsWith('_gaexp='))

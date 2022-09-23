@@ -55,7 +55,7 @@ function getGoogleAnalyticsProperties() {
                 return { experiment_group: experimentGroup, experiment_id: experimentId };
             }
         }
-        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning');
+        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning', { properties: { experimentCookie: experimentCookie } });
     }
     return {};
 }
@@ -147,10 +147,17 @@ function getEventProperties(eventName, target) {
 /**
  * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
  */
-function safelyCaptureMessage(message, level) {
+function safelyCaptureMessage(message, level, context) {
     if (level === void 0) { level = null; }
+    if (context === void 0) { context = {}; }
     if (typeof Sentry !== 'undefined') {
-        Sentry.captureMessage(message, level);
+        Sentry.withScope(function (scope) {
+            if (typeof context.properties !== 'undefined') {
+                var contextName = context.name || 'Custom Context';
+                scope.setContext(contextName, context.properties);
+            }
+            Sentry.captureMessage(message, level);
+        });
     }
 }
 function buttonClickedEvent(eventNameOverride) {

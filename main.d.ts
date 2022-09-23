@@ -2,7 +2,7 @@ declare const dataLayer: unknown[]
 declare const google_optimize: { get: (experimentId: string) => string | undefined}
 declare const PAGE_NAME: string
 declare let player: HTMLAudioElement
-declare const Sentry: import('@sentry/types').Client
+declare const Sentry: import('@sentry/types').Hub
 
 type SeverityLevel = import('@sentry/types').SeverityLevel
 
@@ -50,6 +50,11 @@ type KaraokeAnimationInfo = {
 type KaraokeState = {
     currentQuoteStart: number
     stagedWords: StagedWord[]
+}
+
+type SentryContext = {
+    name?: string
+    properties: Record<string, string>
 }
 
 type StagedWord = UtteranceWord & { element: HTMLSpanElement }

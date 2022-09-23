@@ -55,7 +55,7 @@ function getGoogleAnalyticsProperties() {
                 return { experiment_group: experimentGroup, experiment_id: experimentId };
             }
         }
-        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning');
+        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning', { properties: { experimentCookie: experimentCookie } });
     }
     return {};
 }
@@ -77,6 +77,7 @@ function getBlockProperties(block) {
         pricing: 'basic',
         'sample-questions': 'carousel',
         subscribe: 'basic',
+        'start-building': 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
         topnav: 'basic',
@@ -96,7 +97,7 @@ function getBlockProperties(block) {
     return blockProperties;
 }
 function getFAQEventProperties(target) {
-    var questionText = $(target).children().first().children().first().text();
+    var questionText = $(target).find('.question-wrapper').first().text();
     return { block: 'FAQs', name: questionText, type: 'question' };
 }
 function getInterviewerPlayerEventProperties(target) {
@@ -146,15 +147,23 @@ function getEventProperties(eventName, target) {
 /**
  * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
  */
-function safelyCaptureMessage(message, level) {
+function safelyCaptureMessage(message, level, context) {
     if (level === void 0) { level = null; }
+    if (context === void 0) { context = null; }
     if (typeof Sentry !== 'undefined') {
-        Sentry.captureMessage(message, level);
+        Sentry.withScope(function (scope) {
+            if (context) {
+                var contextName = context.name || 'Custom Context';
+                scope.setContext(contextName, context.properties);
+            }
+            Sentry.captureMessage(message, level);
+        });
     }
 }
-function buttonClickedEvent() {
+function buttonClickedEvent(eventNameOverride) {
+    if (eventNameOverride === void 0) { eventNameOverride = null; }
     var target = $(this).closest('[data-event-name]')[0];
-    var eventName = buttonClickedEventName;
+    var eventName = eventNameOverride || buttonClickedEventName;
     var eventProperties = getEventProperties(eventName, target);
     // All click events should have a `block` property defined.
     if (!('block' in eventProperties)) {
@@ -191,8 +200,10 @@ function viewedLandingPageBlockEvent(entries) {
 (function () {
     var blockObserver = new IntersectionObserver(viewedLandingPageBlockEvent);
     $("[data-event-name=\"".concat(viewedLandingPageBlockEventName, "\"]")).each(function () { blockObserver.observe(this); });
-    $("[data-event-name=\"".concat(buttonClickedEventName, "\"]")).on('click', buttonClickedEvent);
-    $("[data-event-name=\"".concat(faqOpenedEventName, "\"]")).on('click', buttonClickedEvent);
+    $("[data-event-name=\"".concat(buttonClickedEventName, "\"]")).on('click', function () { buttonClickedEvent.bind(this)(); });
+    $("[data-event-name=\"".concat(faqOpenedEventName, "\"]")).on('click', function () {
+        buttonClickedEvent.bind(this)(faqOpenedEventName);
+    });
     $("[data-event-name=\"".concat(kidConversionFlowStartedEventName, "\"]")).on('click', kidConversionFlowStartedEvent);
     // Send a warning if we specified an invalid event name in an element's custom attributes.
     var expectedEventsNames = [

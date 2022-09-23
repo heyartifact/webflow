@@ -51,7 +51,11 @@ function getGoogleAnalyticsProperties() {
                 return { experiment_group: experimentGroup, experiment_id: experimentId }
             }
         }
-        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning')
+        safelyCaptureMessage(
+            'The Google Optimize experiment group could not be determined.',
+            'warning',
+            { properties: { experimentCookie } }
+        )
     }
     return {}
 }
@@ -81,6 +85,7 @@ function getBlockProperties(block: string) {
         pricing: 'basic',
         'sample-questions': 'carousel',
         subscribe: 'basic',
+        'start-building': 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
         topnav: 'basic',
@@ -104,7 +109,7 @@ function getBlockProperties(block: string) {
 
 
 function getFAQEventProperties(target: HTMLElement) {
-    const questionText = $(target).children().first().children().first().text()
+    const questionText = $(target).find('.question-wrapper').first().text()
     return { block: 'FAQs', name: questionText, type: 'question' }
 }
 
@@ -162,16 +167,22 @@ function getEventProperties(eventName: string, target: HTMLElement) {
 /**
  * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
  */
-function safelyCaptureMessage(message: string, level: SeverityLevel = null) {
+function safelyCaptureMessage(message: string, level: SeverityLevel = null, context: SentryContext = null) {
     if (typeof Sentry !== 'undefined') {
-        Sentry.captureMessage(message, level)
+        Sentry.withScope(function (scope) {
+            if (context) {
+                const contextName = context.name || 'Custom Context'
+                scope.setContext(contextName, context.properties)
+            }
+            Sentry.captureMessage(message, level)
+        })
     }
 }
 
 
-function buttonClickedEvent(this: HTMLElement) {
+function buttonClickedEvent(this: HTMLElement, eventNameOverride: string = null) {
     const target = $(this).closest('[data-event-name]')[0]
-    const eventName = buttonClickedEventName
+    const eventName = eventNameOverride || buttonClickedEventName
     const eventProperties = getEventProperties(eventName, target)
 
     // All click events should have a `block` property defined.
@@ -220,8 +231,10 @@ function viewedLandingPageBlockEvent(entries: IntersectionObserverEntry[]) {
     const blockObserver = new IntersectionObserver(viewedLandingPageBlockEvent)
     $(`[data-event-name="${viewedLandingPageBlockEventName}"]`).each(function() { blockObserver.observe(this) })
 
-    $(`[data-event-name="${buttonClickedEventName}"]`).on('click', buttonClickedEvent)
-    $(`[data-event-name="${faqOpenedEventName}"]`).on('click', buttonClickedEvent)
+    $(`[data-event-name="${buttonClickedEventName}"]`).on('click', function() { buttonClickedEvent.bind(this)() })
+    $(`[data-event-name="${faqOpenedEventName}"]`).on('click', function() {
+        buttonClickedEvent.bind(this)(faqOpenedEventName)
+    })
 
     $(`[data-event-name="${kidConversionFlowStartedEventName}"]`).on('click', kidConversionFlowStartedEvent)
 

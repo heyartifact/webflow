@@ -149,10 +149,10 @@ function getEventProperties(eventName, target) {
  */
 function safelyCaptureMessage(message, level, context) {
     if (level === void 0) { level = null; }
-    if (context === void 0) { context = {}; }
+    if (context === void 0) { context = null; }
     if (typeof Sentry !== 'undefined') {
         Sentry.withScope(function (scope) {
-            if (typeof context.properties !== 'undefined') {
+            if (context) {
                 var contextName = context.name || 'Custom Context';
                 scope.setContext(contextName, context.properties);
             }

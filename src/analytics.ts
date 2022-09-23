@@ -167,10 +167,10 @@ function getEventProperties(eventName: string, target: HTMLElement) {
 /**
  * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
  */
-function safelyCaptureMessage(message: string, level: SeverityLevel = null, context: SentryContext = {}) {
+function safelyCaptureMessage(message: string, level: SeverityLevel = null, context: SentryContext = null) {
     if (typeof Sentry !== 'undefined') {
         Sentry.withScope(function (scope) {
-            if (typeof context.properties !== 'undefined') {
+            if (context) {
                 const contextName = context.name || 'Custom Context'
                 scope.setContext(contextName, context.properties)
             }

@@ -54,7 +54,7 @@ type KaraokeState = {
 
 type SentryContext = {
     name?: string
-    properties?: Record<string, string>
+    properties: Record<string, string>
 }
 
 type StagedWord = UtteranceWord & { element: HTMLSpanElement }

@@ -165,13 +165,14 @@ function buttonClickedEvent(eventNameOverride) {
     var target = $(this).closest('[data-event-name]')[0];
     var eventName = eventNameOverride || buttonClickedEventName;
     var eventProperties = getEventProperties(eventName, target);
+    // `getEventProperties` will return `null` if the event should not be sent.
+    if (!eventProperties)
+        return;
     // All click events should have a `block` property defined.
     if (!('block' in eventProperties)) {
         safelyCaptureMessage("The block property has not been set for a click event with the name, ".concat(eventName, "."), 'warning');
     }
-    // `getEventProperties` will return `null` if the event should not be sent.
-    if (eventProperties)
-        sendEvent(eventName, eventProperties);
+    sendEvent(eventName, eventProperties);
 }
 function kidConversionFlowStartedEvent() {
     // Send the button clicked event to Segment.

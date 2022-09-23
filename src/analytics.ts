@@ -185,6 +185,9 @@ function buttonClickedEvent(this: HTMLElement, eventNameOverride: string = null)
     const eventName = eventNameOverride || buttonClickedEventName
     const eventProperties = getEventProperties(eventName, target)
 
+    // `getEventProperties` will return `null` if the event should not be sent.
+    if (!eventProperties) return
+
     // All click events should have a `block` property defined.
     if (!('block' in eventProperties)) {
         safelyCaptureMessage(
@@ -193,8 +196,7 @@ function buttonClickedEvent(this: HTMLElement, eventNameOverride: string = null)
         )
     }
 
-    // `getEventProperties` will return `null` if the event should not be sent.
-    if (eventProperties) sendEvent(eventName, eventProperties)
+    sendEvent(eventName, eventProperties)
 }
 
 

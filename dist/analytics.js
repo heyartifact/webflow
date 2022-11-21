@@ -67,6 +67,7 @@ function sendEvent(name, properties) {
 }
 function getBlockProperties(block) {
     var blockVariants = {
+        'black-friday': 'basic',
         FAQs: 'vertical-expanding',
         footer: 'basic',
         hero: 'basic',

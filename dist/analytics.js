@@ -35,6 +35,9 @@ for (var _i = 0, _a = [5, 15, 30, 45]; _i < _a.length; _i++) {
  * Example cookie: _gaexp=GAX1.2.OLD_EXPERIMENT_ID.19285.1!NEW_EXPERIMENT_ID.19286.0
  */
 function getGoogleAnalyticsProperties() {
+    // Google Optimize is only set to run in production.
+    if (ENVIRONMENT !== 'production')
+        return {};
     var cookieString = document.cookie;
     var cookies = cookieString.split('; ');
     var experimentCookie = cookies.find(function (cookie) { return cookie.startsWith('_gaexp='); });
@@ -166,13 +169,14 @@ function buttonClickedEvent(eventNameOverride) {
     var target = $(this).closest('[data-event-name]')[0];
     var eventName = eventNameOverride || buttonClickedEventName;
     var eventProperties = getEventProperties(eventName, target);
+    // `getEventProperties` will return `null` if the event should not be sent.
+    if (!eventProperties)
+        return;
     // All click events should have a `block` property defined.
     if (!('block' in eventProperties)) {
         safelyCaptureMessage("The block property has not been set for a click event with the name, ".concat(eventName, "."), 'warning');
     }
-    // `getEventProperties` will return `null` if the event should not be sent.
-    if (eventProperties)
-        sendEvent(eventName, eventProperties);
+    sendEvent(eventName, eventProperties);
 }
 function kidConversionFlowStartedEvent() {
     // Send the button clicked event to Segment.

@@ -44,23 +44,6 @@ function sendAnalyticsEvent(eventName: string, eventProperties: EventProperties)
 
 
 /**
- * Attempt to retrieve animation info, if it exists, and sync the audio player to the animation.
- */
-function syncAudioPlayerAndAnimation() {
-    if (typeof currentAnimationInfo !== 'undefined' && typeof ANIMATIONS !== 'undefined') {
-        if (currentAnimationInfo.name in ANIMATIONS) {
-            const animation = ANIMATIONS[currentAnimationInfo.name]
-            if (player.querySelector('source').src === animation.expectedAudioSrc) {
-                player.currentTime = ((
-                    (new Date()).valueOf() - currentAnimationInfo.timeScrolledIntoView
-                ) % animation.duration) / 1000
-            }
-        }
-    }
-}
-
-
-/**
  * Sets loads the audio file based on the button that was clicked to start the audio player.
  *
  * Here is a sample audio player component that should be included on the page (note that this should be inside a
@@ -88,7 +71,6 @@ async function setPlayer(this: HTMLElement) {
         } else {
             playUnmuteIconPlayer.setAttribute('display', 'none')
             pauseMuteIconPlayer.setAttribute('display', 'block')
-            syncAudioPlayerAndAnimation()
             player.play()
         }
     } else {
@@ -101,7 +83,6 @@ async function setPlayer(this: HTMLElement) {
                 await resetControllers()
                 pauseMuteIconPlayer.setAttribute('display', 'block')
                 playUnmuteIconPlayer.setAttribute('display', 'none')
-                syncAudioPlayerAndAnimation()
                 player.play()
 
                 const eventName = 'Player Started'

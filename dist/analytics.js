@@ -166,6 +166,9 @@ function safelyCaptureMessage(message, level, context) {
             Sentry.captureMessage(message, level);
         });
     }
+    else {
+        console.warn(message);
+    }
 }
 function buttonClickedEvent(eventNameOverride) {
     if (eventNameOverride === void 0) { eventNameOverride = null; }

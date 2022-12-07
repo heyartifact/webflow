@@ -183,6 +183,8 @@ function safelyCaptureMessage(message: string, level: SeverityLevel = null, cont
             }
             Sentry.captureMessage(message, level)
         })
+    } else {
+        console.warn(message)
     }
 }
 

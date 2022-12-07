@@ -71,9 +71,11 @@ function sendEvent(name, properties) {
 }
 function getBlockProperties(block) {
     var blockVariants = {
+        'animated-preview': 'basic',
         'discount-highlight': 'basic',
         FAQs: 'vertical-expanding',
         footer: 'basic',
+        'forever-guarantee': 'basic',
         'get-started': 'basic',
         giftcards: 'basic',
         hero: 'basic',

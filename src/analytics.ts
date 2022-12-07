@@ -78,9 +78,11 @@ function sendEvent(name: string, properties: Record<string, unknown>) {
 
 function getBlockProperties(block: string) {
     const blockVariants: Record<string, BlockVariant> = {
+        'animated-preview': 'basic',
         'discount-highlight': 'basic',
         FAQs: 'vertical-expanding',
         footer: 'basic',
+        'forever-guarantee': 'basic',
         'get-started': 'basic',
         giftcards: 'basic',
         hero: 'basic',

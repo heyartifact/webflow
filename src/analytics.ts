@@ -54,6 +54,7 @@ function getGoogleAnalyticsProperties() {
                 return { experiment_group: experimentGroup, experiment_id: experimentId }
             }
         }
+        // TODO: Investigate how to properly attach a context to Sentry messages and include the experiment cookie.
         safelyCaptureMessage(
             'The Google Optimize experiment group could not be determined.',
             'warning'
@@ -176,8 +177,6 @@ function getEventProperties(eventName: string, target: HTMLElement) {
 function safelyCaptureMessage(message: string, level: SeverityLevel = null) {
     if (typeof Sentry !== 'undefined') {
         Sentry.captureMessage(message, level)
-    } else {
-        console.warn(message)
     }
 }
 

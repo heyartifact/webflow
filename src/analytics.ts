@@ -56,8 +56,7 @@ function getGoogleAnalyticsProperties() {
         }
         safelyCaptureMessage(
             'The Google Optimize experiment group could not be determined.',
-            'warning',
-            { properties: { experimentCookie } }
+            'warning'
         )
     }
     return {}
@@ -174,19 +173,9 @@ function getEventProperties(eventName: string, target: HTMLElement) {
 /**
  * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
  */
-function safelyCaptureMessage(message: string, level: SeverityLevel = null, context: SentryContext = null) {
+function safelyCaptureMessage(message: string, level: SeverityLevel = null) {
     if (typeof Sentry !== 'undefined') {
-        console.log(message)
-        console.log(level)
-        console.log(context)
-        Sentry.withScope(function (scope) {
-            console.log(scope)
-            if (context) {
-                const contextName = context.name || 'Custom Context'
-                scope.setContext(contextName, context.properties)
-            }
-            Sentry.captureMessage(message, level)
-        })
+        Sentry.captureMessage(message, level)
     } else {
         console.warn(message)
     }

@@ -41,6 +41,14 @@ sending each event are included below.
 In addition to the required custom attributes, any custom attribute beginning with `data-event-` will automatically be
 included in the payload.
 
+The event listeners for these events are only attached to elements that are rendered on the initial page load. Elements
+hidden with CSS will have events attached (since the elements are in the DOM), but elements that are added to the DOM
+after the initial load will not. For example:
+
+- The paginated FAQ block only renders the visible FAQs to the DOM, so only the first page will have analytics events.
+- The FAQ block that has separate tabs renders ALL the FAQs to the DOM (even the inactive tabs), so all the FAQs will
+have the proper events attached.
+
 ### The `Button Clicked` Event
 
 To have an element trigger this, assign the `data-event-name` attribute with a value of `Button Clicked`.

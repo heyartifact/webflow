@@ -158,7 +158,11 @@ function safelyCaptureMessage(message, level, context) {
     if (level === void 0) { level = null; }
     if (context === void 0) { context = null; }
     if (typeof Sentry !== 'undefined') {
+        console.log(message);
+        console.log(level);
+        console.log(context);
         Sentry.withScope(function (scope) {
+            console.log(scope);
             if (context) {
                 var contextName = context.name || 'Custom Context';
                 scope.setContext(contextName, context.properties);

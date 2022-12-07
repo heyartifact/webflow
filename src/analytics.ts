@@ -176,7 +176,11 @@ function getEventProperties(eventName: string, target: HTMLElement) {
  */
 function safelyCaptureMessage(message: string, level: SeverityLevel = null, context: SentryContext = null) {
     if (typeof Sentry !== 'undefined') {
+        console.log(message)
+        console.log(level)
+        console.log(context)
         Sentry.withScope(function (scope) {
+            console.log(scope)
             if (context) {
                 const contextName = context.name || 'Custom Context'
                 scope.setContext(contextName, context.properties)

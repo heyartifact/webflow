@@ -54,10 +54,10 @@ function getGoogleAnalyticsProperties() {
                 return { experiment_group: experimentGroup, experiment_id: experimentId }
             }
         }
+        // TODO: Investigate how to properly attach a context to Sentry messages and include the experiment cookie.
         safelyCaptureMessage(
             'The Google Optimize experiment group could not be determined.',
-            'warning',
-            { properties: { experimentCookie } }
+            'warning'
         )
     }
     return {}
@@ -78,12 +78,16 @@ function sendEvent(name: string, properties: Record<string, unknown>) {
 
 function getBlockProperties(block: string) {
     const blockVariants: Record<string, BlockVariant> = {
+        'animated-preview': 'basic',
         'discount-highlight': 'basic',
         FAQs: 'vertical-expanding',
         footer: 'basic',
+        'forever-guarantee': 'basic',
+        'get-started': 'basic',
+        giftcards: 'basic',
         hero: 'basic',
         'how-it-works': 'basic',
-        inspirations: 'carousel',
+        inspirations: 'basic',
         interviewers: 'carousel',
         'packages-and-pricing': 'basic',
         pricing: 'basic',
@@ -92,6 +96,7 @@ function getBlockProperties(block: string) {
         'start-building': 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
+        'today-show': 'basic',
         topnav: 'basic',
         'whats-included': 'basic',
         'your-child': 'basic'
@@ -171,15 +176,9 @@ function getEventProperties(eventName: string, target: HTMLElement) {
 /**
  * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
  */
-function safelyCaptureMessage(message: string, level: SeverityLevel = null, context: SentryContext = null) {
+function safelyCaptureMessage(message: string, level: SeverityLevel = null) {
     if (typeof Sentry !== 'undefined') {
-        Sentry.withScope(function (scope) {
-            if (context) {
-                const contextName = context.name || 'Custom Context'
-                scope.setContext(contextName, context.properties)
-            }
-            Sentry.captureMessage(message, level)
-        })
+        Sentry.captureMessage(message, level)
     }
 }
 

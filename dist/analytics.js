@@ -58,7 +58,8 @@ function getGoogleAnalyticsProperties() {
                 return { experiment_group: experimentGroup, experiment_id: experimentId };
             }
         }
-        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning', { properties: { experimentCookie: experimentCookie } });
+        // TODO: Investigate how to properly attach a context to Sentry messages and include the experiment cookie.
+        safelyCaptureMessage('The Google Optimize experiment group could not be determined.', 'warning');
     }
     return {};
 }
@@ -70,12 +71,16 @@ function sendEvent(name, properties) {
 }
 function getBlockProperties(block) {
     var blockVariants = {
+        'animated-preview': 'basic',
         'discount-highlight': 'basic',
         FAQs: 'vertical-expanding',
         footer: 'basic',
+        'forever-guarantee': 'basic',
+        'get-started': 'basic',
+        giftcards: 'basic',
         hero: 'basic',
         'how-it-works': 'basic',
-        inspirations: 'carousel',
+        inspirations: 'basic',
         interviewers: 'carousel',
         'packages-and-pricing': 'basic',
         pricing: 'basic',
@@ -84,6 +89,7 @@ function getBlockProperties(block) {
         'start-building': 'basic',
         testimonials: 'carousel',
         ticker: 'basic',
+        'today-show': 'basic',
         topnav: 'basic',
         'whats-included': 'basic',
         'your-child': 'basic'
@@ -151,17 +157,10 @@ function getEventProperties(eventName, target) {
 /**
  * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
  */
-function safelyCaptureMessage(message, level, context) {
+function safelyCaptureMessage(message, level) {
     if (level === void 0) { level = null; }
-    if (context === void 0) { context = null; }
     if (typeof Sentry !== 'undefined') {
-        Sentry.withScope(function (scope) {
-            if (context) {
-                var contextName = context.name || 'Custom Context';
-                scope.setContext(contextName, context.properties);
-            }
-            Sentry.captureMessage(message, level);
-        });
+        Sentry.captureMessage(message, level);
     }
 }
 function buttonClickedEvent(eventNameOverride) {

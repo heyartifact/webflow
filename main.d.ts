@@ -8,6 +8,9 @@ declare const ENVIRONMENT: 'production' | 'staging' | 'testing'
 
 type SeverityLevel = import('@sentry/types').SeverityLevel
 
+// safelyCaptureMessage is defined in Webflow's custom code to handle the case where the client blocks analytics.js.
+declare const safelyCaptureMessage: (message: string, level?: SeverityLevel) => void
+
 type BlockEventProperties = {
     'block-variant': BlockVariant
     'topnav-pinned'?: boolean

@@ -154,15 +154,6 @@ function getEventProperties(eventName, target) {
     }
     return eventProperties;
 }
-/**
- * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
- */
-function safelyCaptureMessage(message, level) {
-    if (level === void 0) { level = null; }
-    if (typeof Sentry !== 'undefined') {
-        Sentry.captureMessage(message, level);
-    }
-}
 function buttonClickedEvent(eventNameOverride) {
     if (eventNameOverride === void 0) { eventNameOverride = null; }
     var target = $(this).closest('[data-event-name]')[0];

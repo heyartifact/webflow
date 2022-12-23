@@ -1,5 +1,20 @@
 # Webflow Assets
 
+## Miscellaneous Notes
+
+### Videos
+
+When adding videos with embedded HTML instead of Webflow's out of the box video elements, make sure all the attributes
+are set that allow it to autoplay:
+
+```html
+<video muted playsinline autoplay loop><source src='...'></video>
+```
+
+The `playsinline` attribute is needed specifically for mobile iOS browsers. Without this attribute, the browser assumes
+the video is expected to play fullscreen, thus does not allow the video to autoplay. See more in
+[this blog post](https://webkit.org/blog/6784/new-video-policies-for-ios/).
+
 ## Importing
 
 The template for the path to load these scripts is:

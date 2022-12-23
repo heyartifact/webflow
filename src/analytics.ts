@@ -173,16 +173,6 @@ function getEventProperties(eventName: string, target: HTMLElement) {
 }
 
 
-/**
- * It is possible for browsers to block the Sentry script from being downloaded, so capture messages safely.
- */
-function safelyCaptureMessage(message: string, level: SeverityLevel = null) {
-    if (typeof Sentry !== 'undefined') {
-        Sentry.captureMessage(message, level)
-    }
-}
-
-
 function buttonClickedEvent(this: HTMLElement, eventNameOverride: string = null) {
     const target = $(this).closest('[data-event-name]')[0]
     const eventName = eventNameOverride || buttonClickedEventName

@@ -84,6 +84,7 @@ function getBlockProperties(block) {
         interviewers: 'carousel',
         'packages-and-pricing': 'basic',
         pricing: 'basic',
+        reasons: 'basic',
         'sample-questions': 'carousel',
         subscribe: 'basic',
         'start-building': 'basic',

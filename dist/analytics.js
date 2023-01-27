@@ -43,7 +43,7 @@ function getGoogleAnalyticsProperties() {
     var experimentCookie = cookies.find(function (cookie) { return cookie.startsWith('_gaexp='); });
     // Check to see if a cookie was found and that the google_optimize global exists. If either of these are falsey,
     // then it should be safe to assume that we are not running A/B testing.
-    if (experimentCookie && google_optimize) {
+    if (experimentCookie && typeof google_optimize !== 'undefined') {
         // Remove the first two generic parts of the cookie, then split the string into individual experiments.
         var experiments = experimentCookie.split('.').slice(2).join('.').split('!');
         for (var _i = 0, experiments_1 = experiments; _i < experiments_1.length; _i++) {
